@@ -1,0 +1,50 @@
+﻿@{
+    //Layout = null; // Para que no use ningún layout
+    ViewData["Title"] = "Registro";
+}
+@model RecomendadorDePeliculas.Entidades.Models.Usuario
+<div class="d-flex justify-content-center align-items-center vh-100">
+
+    <form asp-action="Registrar" method="post" class="p-4 border rounded bg-light">
+        <div class="mb-3">
+            <label asp-for="Correo" class="form-label"></label>
+            <input asp-for="Correo" type="email" class="form-control" required />
+            <span asp-validation-for="Correo" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FechaDeNacimiento" class="form-label"></label>
+            <input asp-for="FechaDeNacimiento" type="date" class="form-control" />
+            <span asp-validation-for="FechaDeNacimiento" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ContraseniaHash" class="form-label">ingrese contraseña</label>
+            <input asp-for="ContraseniaHash" type="password" class="form-control" />
+            <span asp-validation-for="ContraseniaHash" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="RepetirContrasenia" class="form-label">Repetir Contraseña</label>
+            <input id="RepetirContrasenia" name="rcontra" type="password" class="form-control" required />
+            @if (TempData["rcontra"] != null)
+            {
+                @TempData["rcontra"]
+            }
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Genero" class="form-label"></label>
+            <select asp-for="Genero" class="form-select">
+                <option value="">Seleccionar</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+                <option value="O">Otro</option>
+            </select>
+            <span asp-validation-for="Genero" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+    </form>
+
+</div>
