@@ -13,9 +13,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
     {
         private IUsuarioLogica _usuarioLogica;
         public LoginController(IUsuarioLogica usuarioLogica) {
-        
             _usuarioLogica= usuarioLogica;
-
         }
 
         [HttpGet]
@@ -27,13 +25,19 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> ValidarLogin(string correo,string contrasenia)
         {
-            if (_usuarioLogica.ValidarLogin(correo,contrasenia))
-        {
+            if (_usuarioLogica.ValidarLogin(correo, contrasenia))
+            {
                 var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.Name, correo),
+            };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
                 return Redirect("/Home/Index");
             }
-
             TempData["Mensaje"] = "Correo o contraseña incorrecta";
             return View("login");
         }
