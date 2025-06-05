@@ -28,17 +28,9 @@ namespace RecomendadorDePeliculas.Web.Controllers
         public async Task<IActionResult> ValidarLogin(string correo,string contrasenia)
         {
             if (_usuarioLogica.ValidarLogin(correo,contrasenia))
-            {
+        {
                 var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, correo),
-            };
-
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
                 return Redirect("/Home/Index");
             }
 
