@@ -19,6 +19,10 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/Index");
+            }
             return View();
         }
 
@@ -38,20 +42,25 @@ namespace RecomendadorDePeliculas.Web.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
                 return Redirect("/Home/Index");
             }
+
             TempData["Mensaje"] = "Correo o contraseña incorrecta";
             return View("login");
         }
-
-        [HttpPost]
+        //cuando lo envuelva en un boton hacerlo form todo
         public async Task <IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Redirect("Login");
+            return View("Login");
         }
 
         [HttpGet]
         public IActionResult Registrar()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/Index");
+            }
+
             return View(new Usuario());
         }
 
@@ -79,6 +88,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpGet]
         public IActionResult RecuperarContrasenia()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/Index");
+            }
+
             return View();
         }
 
