@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using RecomendadorDePeliculas.Entidades.Models;
 using RecomendadorDePeliculas.Logica;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace RecomendadorDePeliculas.Web.Controllers
 {
+    [AllowAnonymous]
     public class LoginController : Controller
     {
-
         private IUsuarioLogica _usuarioLogica;
         public LoginController(IUsuarioLogica usuarioLogica) {
         
@@ -21,23 +25,24 @@ namespace RecomendadorDePeliculas.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Logout()
-        {
-            //TODO: QUITAR COOKIES
-            return Redirect("Login");
-        }
-
-        [HttpPost]
-        public IActionResult ValidarLogin(string correo,string contrasenia)
+        public async Task<IActionResult> ValidarLogin(string correo,string contrasenia)
         {
             if (_usuarioLogica.ValidarLogin(correo,contrasenia))
+        {
+                var claims = new List<Claim>
             {
-                //TODO: AGREGAR COOKIES 
                 return Redirect("/Home/Index");
             }
 
             TempData["Mensaje"] = "Correo o contraseña incorrecta";
             return View("login");
+        }
+
+        [HttpPost]
+        public async Task <IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Redirect("Login");
         }
 
         [HttpGet]
