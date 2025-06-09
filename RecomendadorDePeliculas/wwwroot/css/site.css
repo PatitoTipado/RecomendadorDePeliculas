@@ -20,3 +20,16 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.logo-header {
+    width: 160px; /* ajustalo según tu imagen */
+    height: 50px; /* ajustalo según tu imagen */
+    background-image: url('/img/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    color:transparent; /* oculta visualmente el texto */
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none; /* no se puede seleccionar */
+}
