@@ -3,9 +3,14 @@
     ViewData["Title"] = "Iniciar sesion";
 }
 
-@if(TempData["aviso"]!=null){
-    @TempData["aviso"]
+@if (TempData["aviso"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3 mx-auto text-center" role="alert" style="max-width: 500px;">
+        @TempData["aviso"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
 }
+
 
 <div class="row justify-content-center mt-5">
     <div class="col-md-4 col-sm-8">
