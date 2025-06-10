@@ -19,6 +19,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 
+//insertar ml y ademas el movie recomender
+
 builder.Services.AddScoped<RecomendadorPeliculasContext>();
 
 builder.Services.AddScoped<IUsuarioLogica,UsuarioLogica>();
