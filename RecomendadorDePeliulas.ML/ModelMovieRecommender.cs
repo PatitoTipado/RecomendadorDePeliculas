@@ -4,25 +4,31 @@ using Microsoft.ML.Trainers;
 
 namespace RecomendadorDePeliulas.ML
 {
-    public class ModelMovieRecommender
+    public interface IModelMovieRecomender
     {
-        /*
-         * Los datos de las clasificaciones de recomendación se dividen en 
-         * conjuntos de datos Train y Test.
-         * Los datos Train se usan para ajustar el modelo, mientras que los 
-         * datos Test sirven para realizar predicciones con el modelo 
-         * entrenado y evaluar el rendimiento del modelo. Los datos Train y Test
-         * suelen dividirse con una proporción de 80/20.
-         */
+        public void BuildAndSaveModel();
+        public (IDataView training, IDataView test) LoadData();
+        public ITransformer BuildAndTrainModel(IDataView trainingDataView);
+        public void EvaluateModel(IDataView testDataView);
+        public MovieRating UseModelForSinglePrediction(int userId, int movieId);
+        public List<MovieRating> getPredictionsFor(int userId, int quantity);
+        public void insertRatingOnModel(float userId, float movieId, float rating);
+        public void SaveModel(DataViewSchema trainingDataViewSchema, ITransformer model);
+        public ITransformer Load();
+    }
 
+    public class ModelMovieRecommender: IModelMovieRecomender
+    {
         private readonly MLContext _mlContext;
         private ITransformer _model;
-        public ModelMovieRecommender(MLContext mlContext)
-        {
-            var modelDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-            var modelPath = Path.Combine(modelDirectory, "Data", "MovieRecommenderModel.zip");
+        private string _dataPath;
+        private string _modelPath;
 
+        public ModelMovieRecommender(MLContext mlContext, string modelPath,string dataPath)
+        {
             _mlContext = mlContext;
+            _dataPath = dataPath;
+            _modelPath = modelPath;
 
             if (!(System.IO.File.Exists(modelPath)))
             {
@@ -44,14 +50,11 @@ namespace RecomendadorDePeliulas.ML
 
         //solo una vez se ejecuta con la data cargada luego podre usar las dos interfaces 
         //hechas para otros metodos
-        private (IDataView training, IDataView test) LoadData()
+        public (IDataView training, IDataView test) LoadData()
         {
-            var rootPath = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-            var dataPath = Path.Combine(rootPath, "Data", "data-ratings.csv");
-
             // Cargar los datos desde el archivo CSV
             IDataView dataView = _mlContext.Data.LoadFromTextFile<MovieRating>(
-                dataPath,
+                _dataPath,
                 hasHeader: true,
                 separatorChar: ','
             );
@@ -64,7 +67,7 @@ namespace RecomendadorDePeliulas.ML
 
 
         //primeravez que entreno el modelo 
-        private ITransformer BuildAndTrainModel(IDataView trainingDataView)
+        public ITransformer BuildAndTrainModel(IDataView trainingDataView)
         {
             IEstimator<ITransformer> estimator = _mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "userIdEncoded", inputColumnName: "userId")
     .Append(_mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "movieIdEncoded", inputColumnName: "movieId"));
@@ -96,20 +99,22 @@ namespace RecomendadorDePeliulas.ML
         //aca es la iteracion que va preguntando cual podria gustarle al usuario
         public MovieRating UseModelForSinglePrediction(int userId,int movieId)
         {
-            //Console.WriteLine("=============== Making a prediction ===============");
+            Console.WriteLine("=============== Making a prediction ===============");
             var predictionEngine = _mlContext.Model.CreatePredictionEngine<MovieRating, MovieRatingPrediction>(_model);
             var testInput = new MovieRating { userId = userId, movieId = movieId };
 
             var movieRatingPrediction = predictionEngine.Predict(testInput);
             if (Math.Round(movieRatingPrediction.Score, 1) > 3.5)
             {
+                Console.WriteLine("recomendadisima");
                 return testInput;
             }
             else
             {
+                Console.WriteLine("no");
+
                 return null;
             }
-
         }
 
         /*public List<MovieRating> GetTopRecommendations(int userId, List<int> candidateMovieIds)
@@ -151,11 +156,7 @@ namespace RecomendadorDePeliulas.ML
 
         public void insertRatingOnModel(float userId,float movieId,float rating)
         {
-
-            var rootPath = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-            var dataPath = Path.Combine(rootPath, "Data", "data-ratings.csv");
-
-            using (var writer = new StreamWriter(dataPath, true)) // Guardar nuevos ratings
+            using (var writer = new StreamWriter(_dataPath, true)) // Guardar nuevos ratings
             {
                 writer.WriteLine($"{userId},{movieId},{rating}{DateTime.Now}");
             }
@@ -163,20 +164,17 @@ namespace RecomendadorDePeliulas.ML
 
         public void SaveModel(DataViewSchema trainingDataViewSchema, ITransformer model)
         {
-            var modelDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-            var modelPath = Path.Combine(modelDirectory, "Data", "MovieRecommenderModel.zip");
 
-            Directory.CreateDirectory(modelDirectory);
+            Directory.CreateDirectory(_modelPath);
 
             //Console.WriteLine("=============== Saving the model to a file ===============");
-            _mlContext.Model.Save(model, trainingDataViewSchema, modelPath);
+            _mlContext.Model.Save(model, trainingDataViewSchema, _modelPath);
         }
 
         public ITransformer Load()
         {
-            var modelDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
 
-            return _mlContext.Model.Load(Path.Combine(modelDirectory, "Data", "MovieRecommenderModel.zip"), out var inputSchema);
+            return _mlContext.Model.Load(Path.Combine(_modelPath), out var inputSchema);
         }
 
     }

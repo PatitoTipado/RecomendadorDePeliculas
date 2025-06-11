@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Recomendador.Entidades\RecomendadorDePeliculas.Entidades.csproj" />
+    <ProjectReference Include="..\RecomendadorDePeliulas.ML\RecomendadorDePeliulas.ML.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML;
 using RecomendadorDePeliculas.Entidades.Models;
 using RecomendadorDePeliculas.Logica;
+using RecomendadorDePeliulas.ML;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,7 +26,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddScoped<RecomendadorPeliculasContext>();
 
+builder.Services.AddSingleton<MLContext>();
+
+var modelPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "MovieRecommenderModel.zip");
+var dataPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "data-ratings.csv");
+
+// Registrar el servicio pasando las rutas
+builder.Services.AddSingleton<IModelMovieRecomender>(sp =>
+{
+    var mlContext = sp.GetRequiredService<MLContext>();
+    return new ModelMovieRecommender(mlContext, modelPath, dataPath);
+});
+
 builder.Services.AddScoped<IUsuarioLogica,UsuarioLogica>();
+
+builder.Services.AddScoped<IPeliculaLogica,PeliculaLogica>();
 
 builder.Services.AddAuthorization(options =>
 {
