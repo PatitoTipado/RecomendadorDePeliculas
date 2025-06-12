@@ -7,10 +7,9 @@ namespace RecomendadorDePeliculas.Logica
 
     public interface IUsuarioLogica
     {
+        int obtenerIdUsuarioPorCorreo(string correo);
         public void Registrar(Usuario usuario);
-
         public bool ValidarLogin(string correo, string contrasenia);
-
     }
 
     public class UsuarioLogica : IUsuarioLogica
@@ -21,6 +20,13 @@ namespace RecomendadorDePeliculas.Logica
         public UsuarioLogica(RecomendadorPeliculasContext context)
         {
             _context= context;
+        }
+
+        public int obtenerIdUsuarioPorCorreo(string correo)
+        {
+            Usuario usuario = _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo).Result;
+
+            return usuario.Id;
         }
 
         public void Registrar(Usuario usuario)

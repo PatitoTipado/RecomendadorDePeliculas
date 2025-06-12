@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+    <PackageReference Include="TMDbLib" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Recomendador.Entidades\RecomendadorDePeliculas.Entidades.csproj" />
+    <ProjectReference Include="..\RecomendadorDePeliulas.ML\RecomendadorDePeliulas.ML.csproj" />
   </ItemGroup>
 
 </Project>

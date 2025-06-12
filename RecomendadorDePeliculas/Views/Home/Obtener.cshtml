@@ -1,0 +1,35 @@
+﻿@model TMDbLib.Objects.Movies.Movie
+
+<h2>Detalles de la Película</h2>
+@Model.Images
+
+
+<div>
+    <h3>@Model.Title (@Model.ReleaseDate?.Year)</h3>
+    <p><strong>Descripción:</strong> @Model.Overview</p>
+    <p><strong>Idioma Original:</strong> @Model.OriginalLanguage</p>
+    <p><strong>Popularidad:</strong> @Model.Popularity</p>
+
+    <h4>Géneros:</h4>
+    <ul>
+        @foreach (var genre in Model.Genres)
+        {
+            <li>@genre.Name</li>
+        }
+    </ul>
+
+    <h4>Videos (Trailers):</h4>
+    <ul>
+        @foreach (var video in Model.Videos?.Results ?? new List<TMDbLib.Objects.General.Video>())
+        {
+            <li>
+                <a href="https://www.youtube.com/watch?v=@video.Key" target="_blank">
+                    @video.Name (@video.Type)
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+<h2>Detalles de la Película</h2>
+
+<pre>@Json.Serialize(Model)</pre>
