@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecomendadorDePeliculas.Logica;
 using RecomendadorDePeliculas.Entidades.DTOS;
+using RecomendadorDePeliculas.Entidades.Models;
 
 namespace RecomendadorDePeliculas.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private IPeliculaLogica _peliculaLogica;
-        
-        public HomeController(IPeliculaLogica peliculaLogica)
+        private IRecomenderLogica _peliculaLogica;
+        private ITmdbLogica _tmdbLogica;
+
+        public HomeController(IRecomenderLogica peliculaLogica,ITmdbLogica tmdbLogica)
         {
             _peliculaLogica = peliculaLogica;
+            _tmdbLogica= tmdbLogica;
         }
 
         public IActionResult Index()
@@ -20,12 +23,21 @@ namespace RecomendadorDePeliculas.Web.Controllers
         }
 
         //pasarela para puntear 10 pelis
-        [HttpPost]
-        public IActionResult EvaluarPeliculas()
+        [HttpGet]
+        public IActionResult CalificarPeliculas()
         {
-            UsuarioPeliculaCalificacionDTO dto = _peliculaLogica.ObtenerPeliculasACalificar();
+            //listar generos
+            int userId = Int32.Parse(HttpContext.Session.GetString("UserId"));
+            List<Pelicula> pelicula = _peliculaLogica.ObtenerPeliculasACalificarQueNoCalificoAntes(userId, "Romance", "Comedy");
+            _tmdbLogica.ConseguirPeliculas(pelicula.First().Id);
+            List < PeliculaCalificacionDTO> peliculas = _tmdbLogica.obtenerCaracteristicasDePeliculas(pelicula);
+            return View(pelicula);
+        }
 
-            return View();
+        [HttpGet]
+        public IActionResult obtener()
+        {
+            return View(_tmdbLogica.ConseguirPeliculas(376670));
         }
 
         [HttpGet]
@@ -35,5 +47,6 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
             Console.WriteLine("la pelicula es recomendada ");
         }
+
     }
 }

@@ -4,7 +4,6 @@ namespace RecomendadorDePeliculas.Entidades.Metadata;
 
 public partial class UsuarioMetadata
 {
-
         [Required]
         [EmailAddress(ErrorMessage = "Debe ser un correo electrónico válido")]
         public string Correo { get; set; } = null!;
@@ -19,5 +18,4 @@ public partial class UsuarioMetadata
 
         [Required(ErrorMessage ="El genero es obligatorio")]
         public string Genero { get; set; } =null!;
-
 }
