@@ -55,7 +55,8 @@ namespace RecomendadorDePeliculas.Web.Controllers
         public async Task <IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return View("Login");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -85,7 +86,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
             _usuarioLogica.Registrar(usuario);
 
-            TempData["aviso"] = "se registro correctamente el usuario";
+            TempData["aviso"] = "Registro Exitoso";
             
             return View("login");
         }
