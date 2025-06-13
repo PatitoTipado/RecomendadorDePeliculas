@@ -15,14 +15,38 @@ public partial class RecomendadorPeliculasContext : DbContext
     {
     }
 
+    public virtual DbSet<Historial> Historials { get; set; }
+
+    public virtual DbSet<Pelicula> Peliculas { get; set; }
+
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=RecomendadorPeliculas;Trusted_Connection=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=RecomendadorPeliculas;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Historial>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Historia__3213E83FF96EAB98");
+
+            entity.ToTable("Historial");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.FechaReseña).HasColumnType("datetime");
+            entity.Property(e => e.IsCalificada).HasColumnName("isCalificada");
+        });
+
+        modelBuilder.Entity<Pelicula>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Pelicula__3213E83F8873D13E");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Genres).HasMaxLength(255);
+            entity.Property(e => e.Title).HasMaxLength(255);
+        });
+
         modelBuilder.Entity<Usuario>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__usuario__3213E83FC05DB6C8");

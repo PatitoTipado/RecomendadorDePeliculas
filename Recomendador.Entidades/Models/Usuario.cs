@@ -14,5 +14,4 @@ public partial class Usuario
     public string ContraseniaHash { get; set; } = null!;
 
     public string? Genero { get; set; }
-
 }

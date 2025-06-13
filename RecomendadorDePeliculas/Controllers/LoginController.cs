@@ -40,6 +40,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                int id = _usuarioLogica.obtenerIdUsuarioPorCorreo(correo);
+
+                HttpContext.Session.SetString("UserId", id.ToString());
+
                 return Redirect("/Home/Index");
             }
 
