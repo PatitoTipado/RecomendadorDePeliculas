@@ -17,12 +17,14 @@ namespace RecomendadorDePeliculas.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return Redirect("/Home/Index");
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                HttpContext.Session.Clear();
             }
+
             return View();
         }
 
@@ -45,7 +47,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
                 HttpContext.Session.SetString("UserId", id.ToString());
 
-                return Redirect("/Home/Index");
+                return Redirect("/Home/Generos");
             }
 
             TempData["Mensaje"] = "Correo o contraseña incorrecta";

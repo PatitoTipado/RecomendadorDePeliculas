@@ -15,7 +15,7 @@ namespace RecomendadorDePeliculas.Logica
 {
     public interface IRecomenderLogica
     {
-        List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId, string preferencia, string preferenciaSecundaria);
+        List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId, params string[] preferencias);
         void RealizarPrediccion(int v, int v1);
     }
     public class RecomenderLogica : IRecomenderLogica
@@ -30,25 +30,20 @@ namespace RecomendadorDePeliculas.Logica
             _modelRecomender=model;
             _context = context;
         }
-        public List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId,string preferencia, string preferenciaSecundaria)
+        public List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId, params string[] preferencias)
         {
-
             var reseñasUsuario = _context.Historials
                 .Where(h => h.UsuarioId == userId)
                 .ToList();
 
-            if (reseñasUsuario.Count>0)
-            {
-                List<int> excluir = new List<int>();
-                foreach (var historial in reseñasUsuario)
-                {
-                    excluir.Add(historial.PeliculaId);
-                }
+            List<int> excluir = reseñasUsuario.Select(r => r.PeliculaId).ToList();
 
-                return _peliculaLogica.obtenerPeliculas(excluir, preferencia, preferenciaSecundaria);
+            if (excluir.Count > 0)
+            {
+                return _peliculaLogica.obtenerPeliculas(excluir, preferencias);
             }
 
-            return _peliculaLogica.obtenerPeliculas(preferencia, preferenciaSecundaria); ;
+            return _peliculaLogica.obtenerPeliculas(preferencias);
         }
 
         public void RealizarPrediccion(int v, int v1)

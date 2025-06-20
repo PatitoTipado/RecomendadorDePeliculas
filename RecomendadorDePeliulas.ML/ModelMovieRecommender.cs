@@ -158,7 +158,7 @@ namespace RecomendadorDePeliulas.ML
         {
             using (var writer = new StreamWriter(_dataPath, true)) // Guardar nuevos ratings
             {
-                writer.WriteLine($"{userId},{movieId},{rating}{DateTime.Now}");
+                writer.WriteLine($"{userId},{movieId},{rating},{DateTime.Now}");
             }
         }
 
