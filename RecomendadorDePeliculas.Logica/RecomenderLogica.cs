@@ -18,6 +18,12 @@ namespace RecomendadorDePeliculas.Logica
         List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId, params string[] preferencias);
         void RealizarPrediccion(int v, int v1);
         float RealizarPrediccionScore(int v, int v1);
+        Pelicula ObtenerPeliculaPorId(int id);
+        void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario);
+        List<Historial> ObtenerHistorialDeUsuario(int userId);
+        void EliminarResena(int usuarioId, int peliculaId);
+
+
     }
     public class RecomenderLogica : IRecomenderLogica
     {
@@ -55,5 +61,67 @@ namespace RecomendadorDePeliculas.Logica
         {
            return  _modelRecomender.UseModelForSinglePredictionScore(v, v1);
         }
+
+
+        public Pelicula ObtenerPeliculaPorId(int id)
+        {
+            return _peliculaLogica.ObtenerPeliculaPorId(id);
+        }
+
+
+        public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario)
+        {
+            var existente = _context.Historials
+                .FirstOrDefault(h => h.UsuarioId == usuarioId && h.PeliculaId == peliculaId);
+
+            if (existente != null)
+            {
+                
+                existente.Calificacion = calificacion;
+                existente.Comentario = comentario;
+                existente.FechaReseña = DateTime.Now;
+            }
+            else
+            {
+                
+                var historial = new Historial
+                {
+                    UsuarioId = usuarioId,
+                    PeliculaId = peliculaId,
+                    Calificacion = calificacion,
+                    Comentario = comentario,
+                    FechaReseña = DateTime.Now,
+                    IsCalificada = true
+                };
+
+                _context.Historials.Add(historial);
+            }
+
+            _context.SaveChanges();
+        }
+
+        public void EliminarResena(int usuarioId, int peliculaId)
+        {
+            var reseña = _context.Historials.FirstOrDefault(h =>
+                h.UsuarioId == usuarioId && h.PeliculaId == peliculaId);
+
+            if (reseña != null)
+            {
+                reseña.IsCalificada = false;
+                reseña.Calificacion = 0;
+                reseña.Comentario = null;
+                reseña.FechaReseña = DateTime.Now;
+                _context.SaveChanges();
+            }
+        }
+
+        public List<Historial> ObtenerHistorialDeUsuario(int userId)
+        {
+            return _context.Historials
+                .Where(h => h.UsuarioId == userId && h.IsCalificada)
+                .ToList();
+        }
+
+
     }
 }
