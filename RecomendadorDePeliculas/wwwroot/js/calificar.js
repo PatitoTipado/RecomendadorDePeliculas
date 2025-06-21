@@ -29,7 +29,6 @@ function mostrarPopup(mensaje, score, titulo, scoreTotal) {
                 <p><strong>🎬 Título:</strong> ${titulo}</p>
                 <p><strong>💬 Recomendación:</strong> ${mensaje}</p>
                 <p><strong>⭐ Score estimado:</strong> ${score.toFixed(2)}</p>
-                <p><strong>⭐ Score usuario:</strong> ${scoreTotal.toFixed(2)}</p>
             </div>
         `;
     contenedor.style.display = "block";

@@ -23,11 +23,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         {
             int userId = int.Parse(HttpContext.Session.GetString("UserId"));
             float score = _peliculaLogica.RealizarPrediccionScore(userId, req.peliculaId);
-
-            var ajuste = ObtenerAjustePorGeneros(req.generos, userId);
+            
+            //var ajuste = ObtenerAjustePorGeneros(req.generos, userId);
             // Sumar el ajuste al score base
-            float scoreFinal = score + ajuste;
-            var mensaje = InterpretarResultado(scoreFinal);
+            float scoreFinal = score;
+            var mensaje = InterpretarResultado(score);
             var titulo = req.titulo;
             return Json(new { titulo, mensaje, score, scoreFinal });
         }
