@@ -1,18 +1,16 @@
 ﻿@model IEnumerable<RecomendadorDePeliculas.Entidades.Models.Pelicula>
 
-
 <div class="container mt-3 mb-4 text-end">
     <a href="@Url.Action("Generos", "Home")" class="btn btn-outline-primary">
         Modificar géneros favoritos
     </a>
 </div>
 
-<div class="container mt-4">
-    
+<div class="container mt-4">    
         <div class="row row-cols-1 row-cols-md-2 g-4">
             @foreach (var pelicula in Model)
             {
-                <div class="col">
+            <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
                             <div class="col-md-4">
@@ -23,6 +21,7 @@
                                     <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
                                     <p class="card-text"><strong>ID Interno:</strong> @pelicula.Id</p>
                                     <p class="card-text"><strong>TMDB ID:</strong> @pelicula.TmdbId</p>
+                                <button onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title')">¿Es para mí?</button>
                                 </div>
                             </div>
                         </div>
@@ -31,3 +30,49 @@
             }
         </div>
 </div>
+
+<div id="popup-recomendacion" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%);
+     background:#eef; padding:15px; border-radius:8px; z-index:1000;"></div>
+
+
+<script>
+    function obtenerRecomendacion(peliculaId,titulo) {
+        fetch('/home/recomendacion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuarioId: 1, peliculaId: peliculaId, titulo: titulo }) // ajustá el usuarioId
+        })
+        .then(response => response.json())
+        .then(data => {
+            mostrarPopup(data.mensaje, data.score,data.titulo);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function mostrarPopup(mensaje, score,titulo) {
+        const contenedor = document.getElementById("popup-recomendacion");
+        contenedor.innerHTML = `
+               <div class="popup" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                 background-color: #fefefe; border: 2px solid #4a90e2; padding: 20px; border-radius: 10px;
+                 box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 999; min-width: 300px; max-width: 90%;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">                    
+                    <button onclick="cerrarPopup()" style="background: none;position:fixed; right:15px; border: none; font-size: 1.2rem; cursor: pointer;">❌</button>
+                </div>
+
+                <hr />
+
+                <p><strong>🎬 Título:</strong> ${titulo}</p>
+                <p><strong>💬 Recomendación:</strong> ${mensaje}</p>
+                <p><strong>⭐ Score estimado:</strong> ${score.toFixed(2)}</p>
+            </div>
+        `;
+        contenedor.style.display = "block";
+    }
+
+    function cerrarPopup() {
+        document.getElementById("popup-recomendacion").style.display = "none";
+    }
+</script>

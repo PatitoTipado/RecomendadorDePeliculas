@@ -11,6 +11,7 @@ namespace RecomendadorDePeliulas.ML
         public ITransformer BuildAndTrainModel(IDataView trainingDataView);
         public void EvaluateModel(IDataView testDataView);
         public MovieRating UseModelForSinglePrediction(int userId, int movieId);
+        public float UseModelForSinglePredictionScore(int userId, int movieId);
         public List<MovieRating> getPredictionsFor(int userId, int quantity);
         public void insertRatingOnModel(float userId, float movieId, float rating);
         public void SaveModel(DataViewSchema trainingDataViewSchema, ITransformer model);
@@ -115,6 +116,18 @@ namespace RecomendadorDePeliulas.ML
 
                 return null;
             }
+        }
+
+        public float UseModelForSinglePredictionScore(int userId, int movieId)
+        {
+            Console.WriteLine("=============== Making a prediction ===============");
+            var predictionEngine = _mlContext.Model.CreatePredictionEngine<MovieRating, MovieRatingPrediction>(_model);
+            var testInput = new MovieRating { userId = userId, movieId = movieId };
+
+            var movieRatingPrediction = predictionEngine.Predict(testInput);
+            Console.WriteLine($"Score estimado: {movieRatingPrediction.Score}");
+
+            return movieRatingPrediction.Score;
         }
 
         /*public List<MovieRating> GetTopRecommendations(int userId, List<int> candidateMovieIds)

@@ -17,6 +17,7 @@ namespace RecomendadorDePeliculas.Logica
     {
         List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId, params string[] preferencias);
         void RealizarPrediccion(int v, int v1);
+        float RealizarPrediccionScore(int v, int v1);
     }
     public class RecomenderLogica : IRecomenderLogica
     {
@@ -49,6 +50,10 @@ namespace RecomendadorDePeliculas.Logica
         public void RealizarPrediccion(int v, int v1)
         {
             _modelRecomender.UseModelForSinglePrediction(v, v1);
+        }
+        public float RealizarPrediccionScore(int v, int v1)
+        {
+           return  _modelRecomender.UseModelForSinglePredictionScore(v, v1);
         }
     }
 }

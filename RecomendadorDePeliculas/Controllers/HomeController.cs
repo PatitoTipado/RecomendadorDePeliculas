@@ -110,5 +110,21 @@ namespace RecomendadorDePeliculas.Web.Controllers
             Console.WriteLine("la pelicula es recomendada ");
         }
 
+        [HttpPost]
+        public IActionResult Recomendacion([FromBody] RecomendacionRequest req)
+        {
+            float score = _peliculaLogica.RealizarPrediccionScore(req.usuarioId, req.peliculaId);
+            var mensaje = InterpretarResultado(score);
+            var titulo = req.titulo;
+            return Json(new { score, mensaje, titulo });
+        }
+
+        private string InterpretarResultado(float score)
+        {
+            if (score >= 4) return "🟢 ¡Muy recomendable!";
+            if (score >= 3) return "🟡 Puede gustarte";
+            return "🔴 Poco probable que te guste";
+        }
+
     }
 }
