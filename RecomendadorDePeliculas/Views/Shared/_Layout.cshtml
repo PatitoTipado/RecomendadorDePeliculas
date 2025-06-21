@@ -33,6 +33,11 @@
         }
         else
         {
+            <a asp-controller="Usuario" asp-action="Editar" class="btn btn-warning">
+                Editar Perfil
+            </a>
+
+
             <span class="me-3 align-self-center">¡Hola, @User.Identity.Name!</span>
             <a href="/Login/Logout" class="btn btn-outline-danger">Cerrar sesión</a>
         }
