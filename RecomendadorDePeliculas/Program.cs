@@ -34,6 +34,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 //insertar ml y ademas el movie recomender
 
 builder.Services.AddScoped<RecomendadorPeliculasContext>();
+builder.Services.AddScoped<IRecomendadorPeliculasContext>(sp =>
+    sp.GetRequiredService<RecomendadorPeliculasContext>());
 
 builder.Services.AddSingleton<MLContext>();
 
@@ -92,6 +94,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}");
+    pattern: "{controller=Login}/{action=Login}");
 
 app.Run();

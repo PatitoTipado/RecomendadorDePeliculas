@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Selecciona tus géneros favoritos";
+    var generos = ViewBag.Generos as List<RecomendadorDePeliculas.Entidades.Models.GeneroPelicula>;
+    var generosPreferidos = ViewBag.GenerosPreferidos as List<int> ?? new List<int>();
+}
+
+<div class="preferencias-container">
+    <h2>Seleccioná tus 2 o 3 géneros favoritos</h2>
+
+    <p id="contadorSeleccionados" class="preferencias-contador">
+        Géneros seleccionados: 0 / 3
+    </p>
+
+    <form asp-action="GuardarPreferencias" method="post">
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="preferencias-error" style="display: block;">
+                @TempData["Mensaje"]
+            </div>
+        }
+
+        @foreach (var genero in generos)
+        {
+            <div class="preferencias-checkbox">
+                <input type="checkbox" name="generosSeleccionados" value="@genero.Id" id="gen_@genero.Id" @(generosPreferidos.Contains(genero.Id) ? "checked" : "") />
+                <label for="gen_@genero.Id">@genero.Nombre</label>
+            </div>
+        }
+
+        <button type="submit" id="btnGuardar" class="preferencias-boton" disabled>Guardar preferencias</button>
+        <div id="errorMensaje" class="preferencias-error">
+            Debes seleccionar al menos 2 géneros.
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="generosSeleccionados"]');
+            const form = document.querySelector('form');
+            const errorMensaje = document.getElementById("errorMensaje");
+            const contador = document.getElementById("contadorSeleccionados");
+            const btnGuardar = document.getElementById("btnGuardar");
+
+            function actualizarEstado() {
+                const seleccionados = Array.from(checkboxes).filter(c => c.checked);
+                const cantidad = seleccionados.length;
+
+                contador.textContent = `Géneros seleccionados: ${cantidad} / 3`;
+
+                if (cantidad < 2) {
+                    contador.style.color = "darkred";
+                } else if (cantidad === 3) {
+                    contador.style.color = "green";
+                } else {
+                    contador.style.color = "black";
+                }
+
+                if (cantidad >= 3) {
+                    checkboxes.forEach(c => {
+                        if (!c.checked) {
+                            c.disabled = true;
+                        }
+                    });
+                } else {
+                    checkboxes.forEach(c => c.disabled = false);
+                }
+
+                if (cantidad >= 2) {
+                    errorMensaje.style.display = "none";
+                }
+
+                btnGuardar.disabled = (cantidad < 2 || cantidad > 3);
+            }
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', actualizarEstado);
+            });
+
+            form.addEventListener('submit', function (e) {
+                const seleccionados = Array.from(checkboxes).filter(c => c.checked);
+                if (seleccionados.length < 2) {
+                    e.preventDefault();
+                    errorMensaje.style.display = "block";
+                }
+            });
+
+            actualizarEstado();
+        });
+    </script>
+}
+
+
