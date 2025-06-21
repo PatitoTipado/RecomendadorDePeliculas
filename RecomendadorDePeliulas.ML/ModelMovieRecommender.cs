@@ -13,7 +13,7 @@ namespace RecomendadorDePeliulas.ML
         public MovieRating UseModelForSinglePrediction(int userId, int movieId);
         public float UseModelForSinglePredictionScore(int userId, int movieId);
         public List<MovieRating> getPredictionsFor(int userId, int quantity);
-        public void insertRatingOnModel(float userId, float movieId, float rating);
+        public void insertRatingOnModel(int userId, int movieId, float rating);
         public void SaveModel(DataViewSchema trainingDataViewSchema, ITransformer model);
         public ITransformer Load();
     }
@@ -167,20 +167,56 @@ namespace RecomendadorDePeliulas.ML
             return predictions;
         }
 
-        public void insertRatingOnModel(float userId,float movieId,float rating)
+        public void insertRatingOnModel(int userId,int movieId,float rating)
         {
+            if (yaCalifico(userId, movieId))
+            {
+                Console.WriteLine("El usuario ya calificó esta película.");
+                return;
+            }
+
             using (var writer = new StreamWriter(_dataPath, true)) // Guardar nuevos ratings
             {
                 writer.WriteLine($"{userId},{movieId},{rating},{DateTime.Now}");
+            }
+            BuildAndSaveModel();
+
+        }
+
+        public bool yaCalifico(int userId,int movieId)
+        {
+            using (var reader = new StreamReader(_dataPath))
+            {
+                string line;
+                // Saltar la primera línea (encabezado)
+                reader.ReadLine();
+
+                while ((line = reader.ReadLine()) != null)
+                {
+
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        var parts = line.Split(',');
+                        if (parts.Length >= 3 && int.Parse(parts[0]) == userId && int.Parse(parts[1]) == movieId)
+                        {
+                            return true; // El usuario ya calificó esta película
+                        }
+                    }
+                }
+                return false; // El usuario no ha calificado esta película
             }
         }
 
         public void SaveModel(DataViewSchema trainingDataViewSchema, ITransformer model)
         {
 
-            Directory.CreateDirectory(_modelPath);
+            // Obtenemos solo el directorio (sin incluir el archivo .zip)
+            var directorioDestino = Path.GetDirectoryName(_modelPath);
 
-            //Console.WriteLine("=============== Saving the model to a file ===============");
+            // Nos aseguramos de que el directorio exista
+            Directory.CreateDirectory(directorioDestino);
+
+            // Guardamos el modelo en la ruta indicada (sobrescribe si ya existe)
             _mlContext.Model.Save(model, trainingDataViewSchema, _modelPath);
         }
 

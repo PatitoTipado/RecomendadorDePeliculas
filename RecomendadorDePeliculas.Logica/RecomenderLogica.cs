@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 
 namespace RecomendadorDePeliculas.Logica
 {
@@ -71,6 +72,7 @@ namespace RecomendadorDePeliculas.Logica
 
         public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string genero)
         {
+            GuardarResenaCsv(usuarioId, peliculaId, calificacion);
             var existente = _context.Historials
                 .FirstOrDefault(h => h.UsuarioId == usuarioId && h.PeliculaId == peliculaId);
 
@@ -102,6 +104,12 @@ namespace RecomendadorDePeliculas.Logica
             _context.SaveChanges();
         }
 
+        public bool GuardarResenaCsv(int usuarioId, int peliculaId, double calificacion)
+        {
+            _modelRecomender.insertRatingOnModel(usuarioId, peliculaId, (float)calificacion);
+            return true;
+        }
+          
         public void EliminarResena(int usuarioId, int peliculaId)
         {
             var reseña = _context.Historials.FirstOrDefault(h =>
