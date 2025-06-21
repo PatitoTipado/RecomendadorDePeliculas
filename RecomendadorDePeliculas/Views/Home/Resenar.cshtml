@@ -1,0 +1,37 @@
+﻿@model RecomendadorDePeliculas.Entidades.Models.Pelicula
+
+
+<div class="reseña-container">
+    <div class="reseña-box">
+        <h2 class="reseña-title">Reseñar película</h2>
+        <h3 class="reseña-movie-title">@Model.Title</h3>
+
+        <form asp-action="Resenar" method="post">
+            <input type="hidden" name="peliculaId" value="@Model.Id" />
+
+            <div class="reseña-group">
+                <label for="calificacion">Puntaje (0 a 5):</label><br />
+                <input type="number"
+                       id="calificacion"
+                       name="calificacion"
+                       min="0" max="5"
+                       required
+                       class="reseña-input" />
+            </div>
+
+            <div class="reseña-group">
+                <label for="comentario">Comentario (opcional):</label><br />
+                <textarea id="comentario"
+                          name="comentario"
+                          rows="4"
+                          class="reseña-textarea"
+                          placeholder="Escribí tu opinión... (opcional)">
+                </textarea>
+            </div>
+
+            <div class="reseña-actions">
+                <button type="submit" class="reseña-submit">Guardar reseña</button>
+            </div>
+        </form>
+    </div>
+</div>

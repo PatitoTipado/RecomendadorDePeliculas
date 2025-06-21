@@ -122,3 +122,61 @@ body {
         transform: translateY(0);
     }
 }
+
+
+/*RESENIAS*/
+.reseña-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.reseña-box {
+    border: 1px solid #ccc;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
+}
+
+.reseña-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.reseña-movie-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.reseña-group {
+    margin-bottom: 20px;
+}
+
+.reseña-input,
+.reseña-textarea {
+    width: 100%;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.reseña-actions {
+    text-align: center;
+}
+
+.reseña-submit {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+    .reseña-submit:hover {
+        background-color: #218838;
+    }

@@ -110,5 +110,45 @@ namespace RecomendadorDePeliculas.Web.Controllers
             Console.WriteLine("la pelicula es recomendada ");
         }
 
+
+        [HttpGet]
+        public IActionResult Resenar([FromQuery] int id)
+        {
+            var pelicula = _peliculaLogica.ObtenerPeliculaPorId(id);
+            if (pelicula == null) return NotFound();
+
+            return View("Resenar", pelicula);
+        }
+
+
+        [HttpPost]
+        public IActionResult Resenar(int peliculaId, double calificacion, string comentario)
+        {
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+
+            _peliculaLogica.GuardarResena(userId, peliculaId, calificacion, comentario);
+
+            return RedirectToAction("CalificarPeliculas");
+        }
+
+        [HttpPost]
+        public IActionResult EliminarResena(int peliculaId)
+        {
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+
+            _peliculaLogica.EliminarResena(userId, peliculaId);
+
+            return RedirectToAction("Historial");
+        }
+
+        [HttpGet]
+        public IActionResult Historial()
+        {
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+
+            var historialUsuario = _peliculaLogica.ObtenerHistorialDeUsuario(userId);
+
+            return View(historialUsuario);
+        }
     }
 }
