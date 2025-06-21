@@ -4,6 +4,14 @@
     var generosPreferidos = ViewBag.GenerosPreferidos as List<int> ?? new List<int>();
 }
 
+@if (TempData["mensajeGenero"] != null)
+{
+    <div class="alert alert-success text-center mb-4" role="alert">
+        @TempData["mensajeGenero"]
+    </div>
+}
+
+
 <div class="preferencias-container">
     <h2>Seleccioná tus 2 o 3 géneros favoritos</h2>
 
