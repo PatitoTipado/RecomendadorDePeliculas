@@ -14,6 +14,7 @@ namespace RecomendadorDePeliculas.Logica
 
         public List<Pelicula> obtenerPeliculas(params string[] generos);
         //List<Pelicula> obtenerPeliculas(string preferencia, string preferenciaSecundaria);
+        public Pelicula ObtenerPeliculaPorId(int id);
 
     }
     public class PeliculasLogica : IPeliculasLogica
@@ -138,10 +139,37 @@ namespace RecomendadorDePeliculas.Logica
             }
         }
 
+        public Pelicula ObtenerPeliculaPorId(int id)
+        {
+            using (var reader = new StreamReader(_moviePath))
+            using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
+            {
+                var peliculas = csv.GetRecords<dynamic>().Select(p =>
+                {
+                    string tmdbIdRaw = p.tmdbId?.ToString().Trim();
+
+                    return new Pelicula
+                    {
+                        Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0,
+                        Title = p.title,
+                        Genres = p.genres,
+                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
+                            ? (int)tmdbIdFloat
+                            : 0
+                    };
+                }).ToList();
+
+                return peliculas.FirstOrDefault(p => p.Id == id);
+            }
+        }
+
+
         public List<Pelicula> obtenerPeliculas(params string[] generos)
         {
             return obtenerPeliculas(new List<int>(), generos);
         }
+
+
 
 
     }
