@@ -1,0 +1,49 @@
+﻿@model RecomendadorDePeliculas.Entidades.Models.UsuarioEditarViewModel
+
+<h2>Editar Perfil</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Correo"></label>
+        <input asp-for="Correo" class="form-control" />
+        <span asp-validation-for="Correo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Contrasenia"></label>
+        <input asp-for="Contrasenia" class="form-control" type="password" value="" autocomplete="new-password" />
+        <span asp-validation-for="Contrasenia" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmarContrasenia"></label>
+        <input asp-for="ConfirmarContrasenia" class="form-control" type="password" value="" autocomplete="new-password" />
+        <span asp-validation-for="ConfirmarContrasenia" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="FechaDeNacimiento"></label>
+        <input asp-for="FechaDeNacimiento" class="form-control" type="date" />
+        <span asp-validation-for="FechaDeNacimiento" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Genero"></label>
+        <select asp-for="Genero" class="form-control">
+            <option value="">Seleccione una opción</option>
+            <option value="F">Femenino</option>
+            <option value="M">Masculino</option>
+            <option value="O">Otro</option>
+        </select>
+        <span asp-validation-for="Genero" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
