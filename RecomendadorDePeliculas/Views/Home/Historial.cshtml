@@ -1,0 +1,38 @@
+﻿@model IEnumerable<RecomendadorDePeliculas.Entidades.Models.Historial>
+
+<h2>Historial de Reseñas</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Película ID</th>
+            <th>Calificación</th>
+            <th>Comentario</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PeliculaId</td>
+                <td>@item.Calificacion</td>
+                <td>@item.Comentario</td>
+                <td>@item.FechaReseña.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <a href="/Home/Resenar?id=@item.PeliculaId" class="btn btn-sm btn-outline-primary">
+                        Editar
+                    </a>
+
+                    <form method="post" asp-action="EliminarResena" style="display:inline;">
+                        <input type="hidden" name="peliculaId" value="@item.PeliculaId" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+                            Borrar
+                        </button>
+                    </form>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

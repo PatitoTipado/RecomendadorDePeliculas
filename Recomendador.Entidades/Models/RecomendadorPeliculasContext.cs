@@ -4,7 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RecomendadorDePeliculas.Entidades.Models;
 
-public partial class RecomendadorPeliculasContext : DbContext
+public interface IRecomendadorPeliculasContext
+{
+    DbSet<GeneroPelicula> GenerosPeliculas { get; }
+    DbSet<UsuarioGenero> UsuarioGeneros { get; }
+    DbSet<Usuario> Usuarios { get; }
+
+    int SaveChanges();
+}
+
+public partial class RecomendadorPeliculasContext : DbContext, IRecomendadorPeliculasContext
 {
     public RecomendadorPeliculasContext()
     {
@@ -20,6 +29,11 @@ public partial class RecomendadorPeliculasContext : DbContext
     public virtual DbSet<Pelicula> Peliculas { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+
+    public virtual DbSet<GeneroPelicula> GenerosPeliculas { get; set; }
+
+    public virtual DbSet<UsuarioGenero> UsuarioGeneros { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -70,6 +84,29 @@ public partial class RecomendadorPeliculasContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("genero");
+        });
+
+        modelBuilder.Entity<GeneroPelicula>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nombre).HasMaxLength(50);
+            entity.ToTable("GeneroPelicula");
+        });
+
+        modelBuilder.Entity<UsuarioGenero>(entity =>
+        {
+            entity.ToTable("UsuarioGenero");
+            entity.HasKey(e => new { e.UsuarioId, e.GeneroId });
+
+            entity.HasOne(d => d.Usuario)
+                .WithMany(p => p.UsuarioGeneros)
+                .HasForeignKey(d => d.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(d => d.Genero)
+                .WithMany(p => p.UsuarioGeneros)
+                .HasForeignKey(d => d.GeneroId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);
