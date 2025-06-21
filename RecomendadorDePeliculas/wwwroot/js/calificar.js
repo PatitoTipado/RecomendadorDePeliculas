@@ -6,14 +6,14 @@
     })
         .then(response => response.json())
         .then(data => {
-            mostrarPopup(data.mensaje, data.score, data.titulo, data.scoreFinal);
+            mostrarPopup(data.mensaje, data.score, data.titulo, data.imdbRating);
         })
         .catch(error => {
             console.error('Error:', error);
         });
 }
 
-function mostrarPopup(mensaje, score, titulo, scoreTotal) {
+function mostrarPopup(mensaje, score, titulo, imdbRating) {
     const contenedor = document.getElementById("popup-recomendacion");
     contenedor.innerHTML = `
                <div class="popup" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -29,6 +29,7 @@ function mostrarPopup(mensaje, score, titulo, scoreTotal) {
                 <p><strong>🎬 Título:</strong> ${titulo}</p>
                 <p><strong>💬 Recomendación:</strong> ${mensaje}</p>
                 <p><strong>⭐ Score estimado:</strong> ${score.toFixed(2)}</p>
+                <p><strong>⭐ Puntuacion IMDB:</strong> ${imdbRating.toFixed(2)}</p>
             </div>
         `;
     contenedor.style.display = "block";
