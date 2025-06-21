@@ -1,13 +1,14 @@
 ﻿@model IEnumerable<RecomendadorDePeliculas.Entidades.Models.Pelicula>
 
+
 <div class="container mt-3 mb-4 text-end">
+    <a class="btn btn-outline-secondary" asp-action="Historial" asp-controller="Home">Ver mi historial</a>
     <a href="@Url.Action("Generos", "Home")" class="btn btn-outline-primary">
         Modificar géneros favoritos
     </a>
 </div>
 
 <div class="container mt-4">
-    <a class="btn btn-outline-secondary mt-2" asp-action="Historial" asp-controller="Home">Ver mi historial</a>
     
         <div class="row row-cols-1 row-cols-md-2 g-4">
             @foreach (var pelicula in Model)
@@ -23,7 +24,7 @@
                                     <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
                                     <p class="card-text"><strong>ID Interno:</strong> @pelicula.Id</p>
                                     <p class="card-text"><strong>TMDB ID:</strong> @pelicula.TmdbId</p>
-                                <button onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title')">¿Es para mí?</button>
+                                <button class="btn btn-sm btn-outline-success mt-2" onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title','@pelicula.Genres')">¿Es para mí?</button>
                                 <a asp-controller="Home"
                                    asp-action="Resenar"
                                    asp-all-route-data="@(new Dictionary<string, string> { ["id"] = pelicula.Id.ToString() })"
@@ -44,22 +45,22 @@
 
 
 <script>
-    function obtenerRecomendacion(peliculaId,titulo) {
-        fetch('/home/recomendacion', {
+    function obtenerRecomendacion(peliculaId,titulo,generos) {
+        fetch('/recomendacion/recomendar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuarioId: 1, peliculaId: peliculaId, titulo: titulo }) // ajustá el usuarioId
+            body: JSON.stringify({peliculaId: peliculaId, titulo: titulo,generos:generos }) // ajustá el usuarioId
         })
         .then(response => response.json())
         .then(data => {
-            mostrarPopup(data.mensaje, data.score,data.titulo);
+            mostrarPopup(data.mensaje, data.score,data.titulo,data.scoreFinal);
         })
         .catch(error => {
             console.error('Error:', error);
         });
     }
 
-    function mostrarPopup(mensaje, score,titulo) {
+    function mostrarPopup(mensaje, score,titulo,scoreTotal) {
         const contenedor = document.getElementById("popup-recomendacion");
         contenedor.innerHTML = `
                <div class="popup" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -75,6 +76,7 @@
                 <p><strong>🎬 Título:</strong> ${titulo}</p>
                 <p><strong>💬 Recomendación:</strong> ${mensaje}</p>
                 <p><strong>⭐ Score estimado:</strong> ${score.toFixed(2)}</p>
+                <p><strong>⭐ Score usuario:</strong> ${scoreTotal.toFixed(2)}</p>
             </div>
         `;
         contenedor.style.display = "block";

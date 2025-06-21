@@ -10,6 +10,8 @@ public interface IRecomendadorPeliculasContext
     DbSet<UsuarioGenero> UsuarioGeneros { get; }
     DbSet<Usuario> Usuarios { get; }
 
+    DbSet<Historial> Historials { get; }
+
     int SaveChanges();
 }
 

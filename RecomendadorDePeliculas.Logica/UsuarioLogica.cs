@@ -52,5 +52,8 @@ namespace RecomendadorDePeliculas.Logica
 
             return resultado == PasswordVerificationResult.Success;
         }
+
+        
+
     }
 }

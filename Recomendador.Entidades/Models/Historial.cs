@@ -18,4 +18,6 @@ public partial class Historial
     public string? Comentario { get; set; }
 
     public bool IsCalificada { get; set; }
+
+    public string? Generos { get; set; }
 }

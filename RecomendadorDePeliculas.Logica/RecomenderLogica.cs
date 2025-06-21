@@ -19,7 +19,7 @@ namespace RecomendadorDePeliculas.Logica
         void RealizarPrediccion(int v, int v1);
         float RealizarPrediccionScore(int v, int v1);
         Pelicula ObtenerPeliculaPorId(int id);
-        void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario);
+        void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string Genero);
         List<Historial> ObtenerHistorialDeUsuario(int userId);
         void EliminarResena(int usuarioId, int peliculaId);
 
@@ -69,7 +69,7 @@ namespace RecomendadorDePeliculas.Logica
         }
 
 
-        public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario)
+        public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string genero)
         {
             var existente = _context.Historials
                 .FirstOrDefault(h => h.UsuarioId == usuarioId && h.PeliculaId == peliculaId);
@@ -80,6 +80,7 @@ namespace RecomendadorDePeliculas.Logica
                 existente.Calificacion = calificacion;
                 existente.Comentario = comentario;
                 existente.FechaReseña = DateTime.Now;
+
             }
             else
             {
@@ -91,7 +92,8 @@ namespace RecomendadorDePeliculas.Logica
                     Calificacion = calificacion,
                     Comentario = comentario,
                     FechaReseña = DateTime.Now,
-                    IsCalificada = true
+                    IsCalificada = true,
+                    Generos = genero
                 };
 
                 _context.Historials.Add(historial);
