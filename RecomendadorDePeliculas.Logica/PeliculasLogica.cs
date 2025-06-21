@@ -16,6 +16,7 @@ namespace RecomendadorDePeliculas.Logica
         //List<Pelicula> obtenerPeliculas(string preferencia, string preferenciaSecundaria);
         public Pelicula ObtenerPeliculaPorId(int id);
 
+        List<Pelicula> BuscarPeliculasPorTitulo(string titulo);
     }
     public class PeliculasLogica : IPeliculasLogica
     {
@@ -170,6 +171,36 @@ namespace RecomendadorDePeliculas.Logica
         }
 
 
+        public List<Pelicula> BuscarPeliculasPorTitulo(string titulo)
+        {
+            using (var reader = new StreamReader(_moviePath))
+            using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
+            {
+                var peliculas = csv.GetRecords<dynamic>().Select(p =>
+                {
+                    string tmdbIdRaw = p.tmdbId?.ToString().Trim();
+
+                    return new Pelicula
+                    {
+                        Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0,
+                        Title = p.title,
+                        Genres = p.genres,
+                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
+                            ? (int)tmdbIdFloat
+                            : 0
+                    };
+                }).ToList();
+
+                if (!string.IsNullOrWhiteSpace(titulo))
+                {
+                    peliculas = peliculas
+                        .Where(p => p.Title.Contains(titulo, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                return peliculas;
+            }
+        }
 
 
     }
