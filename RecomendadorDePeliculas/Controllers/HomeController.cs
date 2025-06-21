@@ -10,12 +10,14 @@ namespace RecomendadorDePeliculas.Web.Controllers
         private IRecomenderLogica _peliculaLogica;
         private ITmdbLogica _tmdbLogica;
         private readonly IRecomendadorPeliculasContext _context;
+        private IPeliculasLogica peliculasLogica;
 
-        public HomeController(IRecomenderLogica peliculaLogica,ITmdbLogica tmdbLogica, IRecomendadorPeliculasContext context)
+        public HomeController(IRecomenderLogica peliculaLogica,ITmdbLogica tmdbLogica, IRecomendadorPeliculasContext context, IPeliculasLogica peliculasLogica)
         {
             _peliculaLogica = peliculaLogica;
             _tmdbLogica = tmdbLogica;
             _context = context;
+            this.peliculasLogica = peliculasLogica;
         }
 
         public IActionResult Generos()
@@ -174,5 +176,16 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
             return View(historialUsuario);
         }
+
+
+        [HttpGet]
+        public IActionResult BuscarPeliculas(string titulo)
+        {
+            var resultados = peliculasLogica.BuscarPeliculasPorTitulo(titulo);
+            return View("CalificarPeliculas", resultados);
+        }
+
+
+
     }
 }

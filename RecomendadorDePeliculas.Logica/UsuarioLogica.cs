@@ -4,29 +4,31 @@ using RecomendadorDePeliculas.Entidades.Models;
 
 namespace RecomendadorDePeliculas.Logica
 {
-
     public interface IUsuarioLogica
     {
         int obtenerIdUsuarioPorCorreo(string correo);
-        public void Registrar(Usuario usuario);
-        public bool ValidarLogin(string correo, string contrasenia);
+        void Registrar(Usuario usuario);
+        bool ValidarLogin(string correo, string contrasenia);
+        Usuario ObtenerPorId(int id);
+        void Actualizar(Usuario usuario);
+
+        // ✅ Nuevo método
+        bool CorreoEnUsoPorOtroUsuario(int idUsuarioActual, string correo);
     }
 
     public class UsuarioLogica : IUsuarioLogica
     {
-
         private readonly RecomendadorPeliculasContext _context;
 
         public UsuarioLogica(RecomendadorPeliculasContext context)
         {
-            _context= context;
+            _context = context;
         }
 
         public int obtenerIdUsuarioPorCorreo(string correo)
         {
             Usuario usuario = _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo).Result;
-
-            return usuario.Id;
+            return usuario?.Id ?? 0;
         }
 
         public void Registrar(Usuario usuario)
@@ -38,10 +40,9 @@ namespace RecomendadorDePeliculas.Logica
             _context.Usuarios.Add(usuario);
             _context.SaveChanges();
         }
-       
-        public bool ValidarLogin(string correo,string contrasenia)
-        {
 
+        public bool ValidarLogin(string correo, string contrasenia)
+        {
             Usuario usuario = _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo).Result;
 
             if (usuario == null)
@@ -53,7 +54,40 @@ namespace RecomendadorDePeliculas.Logica
             return resultado == PasswordVerificationResult.Success;
         }
 
-        
+        public Usuario ObtenerPorId(int id)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Id == id);
+        }
 
+        public void Actualizar(Usuario usuario)
+        {
+            var usuarioExistente = _context.Usuarios.FirstOrDefault(u => u.Id == usuario.Id);
+            if (usuarioExistente != null)
+            {
+                if (!string.IsNullOrWhiteSpace(usuario.Correo))
+                    usuarioExistente.Correo = usuario.Correo;
+
+                if (usuario.FechaDeNacimiento.HasValue)
+                    usuarioExistente.FechaDeNacimiento = usuario.FechaDeNacimiento;
+
+                if (!string.IsNullOrWhiteSpace(usuario.Genero))
+                    usuarioExistente.Genero = usuario.Genero;
+
+                if (!string.IsNullOrWhiteSpace(usuario.ContraseniaHash))
+                {
+                    usuarioExistente.ContraseniaHash = usuario.ContraseniaHash;
+                }
+
+                _context.SaveChanges();
+            }
+        }
+
+        // ✅ Nuevo método para validación desde el ViewModel
+        public bool CorreoEnUsoPorOtroUsuario(int idUsuarioActual, string correo)
+        {
+            return _context.Usuarios
+                .Any(u => u.Correo == correo && u.Id != idUsuarioActual);
+        }
     }
 }
+

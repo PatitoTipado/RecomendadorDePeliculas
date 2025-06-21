@@ -9,6 +9,13 @@
 </div>
 
 <div class="container mt-4">
+
+    <form method="get" asp-action="BuscarPeliculas" asp-controller="Home" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="titulo" class="form-control" placeholder="Buscar película por título..." />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
     
         <div class="row row-cols-1 row-cols-md-2 g-4">
             @foreach (var pelicula in Model)
