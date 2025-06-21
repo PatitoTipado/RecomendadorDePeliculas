@@ -1,48 +1,67 @@
 ﻿@model RecomendadorDePeliculas.Entidades.Models.UsuarioEditarViewModel
 
-<h2>Editar Perfil</h2>
+@{
+    ViewData["Title"] = "Editar Perfil";
+}
 
-<form asp-action="Editar" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <div class="form-group">
-        <label asp-for="Correo"></label>
-        <input asp-for="Correo" class="form-control" />
-        <span asp-validation-for="Correo" class="text-danger"></span>
+<div class="editar-perfil-container container mt-5">
+    <div class="editar-perfil-header d-flex justify-content-between align-items-center mb-4">
+        <h2 class="editar-perfil-titulo text-primary">
+            <i class="bi bi-person-circle"></i> Editar Perfil
+        </h2>
+        <a class="btn btn-volver-inicio btn-outline-secondary" href="@Url.Action("Generos", "Home")">
+            ← Volver al inicio
+        </a>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Contrasenia"></label>
-        <input asp-for="Contrasenia" class="form-control" type="password" value="" autocomplete="new-password" />
-        <span asp-validation-for="Contrasenia" class="text-danger"></span>
+    <div class="editar-perfil-card card shadow-sm mx-auto" style="max-width: 500px;">
+        <div class="card-body editar-perfil-form-body">
+            <form asp-action="Editar" method="post" class="editar-perfil-form">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="editar-perfil-campo mb-3">
+                    <label asp-for="Correo" class="form-label editar-perfil-label"></label>
+                    <input asp-for="Correo" class="form-control editar-perfil-input" />
+                    <span asp-validation-for="Correo" class="text-danger editar-perfil-error"></span>
+                </div>
+
+                <div class="editar-perfil-campo mb-3">
+                    <label asp-for="Contrasenia" class="form-label editar-perfil-label"></label>
+                    <input asp-for="Contrasenia" class="form-control editar-perfil-input" type="password" value="" autocomplete="new-password" />
+                    <small class="form-text text-muted editar-perfil-ayuda">Dejá en blanco si no querés cambiarla</small>
+                    <span asp-validation-for="Contrasenia" class="text-danger editar-perfil-error"></span>
+                </div>
+
+                <div class="editar-perfil-campo mb-3">
+                    <label asp-for="ConfirmarContrasenia" class="form-label editar-perfil-label"></label>
+                    <input asp-for="ConfirmarContrasenia" class="form-control editar-perfil-input" type="password" value="" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmarContrasenia" class="text-danger editar-perfil-error"></span>
+                </div>
+
+                <div class="editar-perfil-campo mb-3">
+                    <label asp-for="FechaDeNacimiento" class="form-label editar-perfil-label"></label>
+                    <input asp-for="FechaDeNacimiento" class="form-control editar-perfil-input" type="date" />
+                    <span asp-validation-for="FechaDeNacimiento" class="text-danger editar-perfil-error"></span>
+                </div>
+
+                <div class="editar-perfil-campo mb-4">
+                    <label asp-for="Genero" class="form-label editar-perfil-label"></label>
+                    <select asp-for="Genero" class="form-control editar-perfil-select">
+                        <option value="">Seleccione una opción</option>
+                        <option value="F">Femenino</option>
+                        <option value="M">Masculino</option>
+                        <option value="O">Otro</option>
+                    </select>
+                    <span asp-validation-for="Genero" class="text-danger editar-perfil-error"></span>
+                </div>
+
+                <div class="editar-perfil-boton d-grid">
+                    <button type="submit" class="btn btn-success btn-guardar-perfil">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="ConfirmarContrasenia"></label>
-        <input asp-for="ConfirmarContrasenia" class="form-control" type="password" value="" autocomplete="new-password" />
-        <span asp-validation-for="ConfirmarContrasenia" class="text-danger"></span>
-    </div>
-
-
-    <div class="form-group">
-        <label asp-for="FechaDeNacimiento"></label>
-        <input asp-for="FechaDeNacimiento" class="form-control" type="date" />
-        <span asp-validation-for="FechaDeNacimiento" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Genero"></label>
-        <select asp-for="Genero" class="form-control">
-            <option value="">Seleccione una opción</option>
-            <option value="F">Femenino</option>
-            <option value="M">Masculino</option>
-            <option value="O">Otro</option>
-        </select>
-        <span asp-validation-for="Genero" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
