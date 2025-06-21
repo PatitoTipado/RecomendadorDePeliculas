@@ -17,27 +17,34 @@
     </form>
 
     <a class="btn btn-outline-secondary mt-2" asp-action="Historial" asp-controller="Home">Ver mi historial</a>
-    
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center mt-4" role="alert">
+            No se encontraron películas con ese nombre.
+        </div>
+    }
+    else
+    {
         <div class="row row-cols-1 row-cols-md-2 g-4">
             @foreach (var pelicula in Model)
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
-                            <div class="col-md-4">
-                            </div>
+                            <div class="col-md-4"></div>
                             <div class="col-md-8">
                                 <div class="card-body">
-                                    <h5 class="card-title">@pelicula.Title </h5>
+                                    <h5 class="card-title">@pelicula.Title</h5>
                                     <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
                                     <p class="card-text"><strong>ID Interno:</strong> @pelicula.Id</p>
                                     <p class="card-text"><strong>TMDB ID:</strong> @pelicula.TmdbId</p>
-                                <a asp-controller="Home"
-                                   asp-action="Resenar"
-                                   asp-all-route-data="@(new Dictionary<string, string> { ["id"] = pelicula.Id.ToString() })"
-                                   class="btn btn-sm btn-outline-info mt-2">
-                                    Añadir reseña
-                                </a>
+                                    <a asp-controller="Home"
+                                       asp-action="Resenar"
+                                       asp-route-id="@pelicula.Id"
+                                       class="btn btn-sm btn-outline-info mt-2">
+                                        Añadir reseña
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -45,4 +52,6 @@
                 </div>
             }
         </div>
+    }
+
 </div>
