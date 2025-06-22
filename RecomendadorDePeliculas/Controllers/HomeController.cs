@@ -69,59 +69,63 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
         //pasarela para puntear 10 pelis
         [HttpGet]
+        [HttpGet]
         public IActionResult CalificarPeliculas()
         {
-            //listar generos
             int userId = Int32.Parse(HttpContext.Session.GetString("UserId"));
-            
+
             var generosPreferidos = _context.UsuarioGeneros
                                     .Where(ug => ug.UsuarioId == userId)
                                     .Select(ug => ug.Genero.Nombre)
                                     .ToArray();
-            var generosFinales = generosPreferidos;
-            if (generosPreferidos.Length == 0)
+
+            var favoritas = _context.Historials
+                .Where(h => h.UsuarioId == userId && h.Calificacion > 3)
+                .Select(h => h.Generos)
+                .ToList();
+
+            var generosFinales = favoritas.Count > 0
+                ? generosPreferidos.Union(favoritas
+                    .SelectMany(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    .Select(g => g.Trim())
+                    .Distinct()).ToArray()
+                : generosPreferidos;
+
+            if (generosFinales.Length == 0)
             {
                 TempData["Mensaje"] = "Primero seleccioná tus géneros favoritos.";
                 return RedirectToAction("Index");
             }
 
-            //obtener generos de pelicuas que califico antes, y que tengan mas de 3 en puntuacion peliculas que califico antes
-            var favoritas = _context.Historials
-            .Where(h => h.UsuarioId == userId && h.Calificacion > 3)
-            .Select(h => h.Generos)
-            .ToList();
+            var peliculas = _peliculaLogica.ObtenerPeliculasACalificarQueNoCalificoAntes(userId, generosFinales);
 
-            if (favoritas.Count > 0)
+            var peliculasConImagen = new List<PeliculaConImagenDTO>();
+
+            foreach (var pelicula in peliculas)
             {
+                string? imagen = null;
 
-                // Dividir, limpiar y aplanar los géneros del historial
-                var generosDesdeHistorial = favoritas
-                    .SelectMany(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    .Select(g => g.Trim())
-                    .Distinct()
-                    .ToArray();
+                if (pelicula.TmdbId.HasValue && pelicula.TmdbId > 0)
+                {
+                    var detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
+                    imagen = detalles?.PosterPath != null
+                        ? $"https://image.tmdb.org/t/p/w500{detalles.PosterPath}"
+                        : null;
+                }
 
-                // Unir sin duplicados
-                  generosFinales = generosPreferidos
-                    .Union(generosDesdeHistorial)
-                    .ToArray();
+                peliculasConImagen.Add(new PeliculaConImagenDTO
+                {
+                    Id = pelicula.Id,
+                    Title = pelicula.Title,
+                    Genres = pelicula.Genres,
+                    TmdbId = pelicula.TmdbId,
+                    ImagenUrl = imagen
+                });
             }
 
-            TempData["generos"] = generosFinales;
-
-
-            List<Pelicula> pelicula = _peliculaLogica.ObtenerPeliculasACalificarQueNoCalificoAntes(userId, generosFinales);
-
-            if (pelicula.Count == 0)
-            {
-                TempData["Mensaje"] = "No hay películas disponibles con los géneros seleccionados.";
-                return RedirectToAction("Index");
-            }
-
-            _tmdbLogica.ConseguirPeliculas(pelicula.First().Id);
-            List < PeliculaCalificacionDTO> peliculas = _tmdbLogica.obtenerCaracteristicasDePeliculas(pelicula);
-            return View(pelicula);
+            return View(peliculasConImagen);
         }
+
 
         [HttpGet]
         public IActionResult obtener()
