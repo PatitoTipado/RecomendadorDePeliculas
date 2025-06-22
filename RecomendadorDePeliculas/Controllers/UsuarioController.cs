@@ -66,7 +66,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
                 _usuarioLogica.Actualizar(usuario);
 
-                TempData["aviso"] = "Perfil actualizado correctamente";
+                TempData["mensajeGenero"] = "Perfil actualizado correctamente";
                 return RedirectToAction("Generos", "Home");
             }
             catch (Exception ex)

@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Restablecer Contraseña";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title mb-4 text-center">Restablecer contraseña</h4>
+
+                @if (TempData["Mensaje"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Mensaje"]</div>
+                }
+
+                <form method="post" asp-action="ReestablecerContrasenia">
+                    <input type="hidden" name="token" value="@ViewBag.Token" />
+                    <div class="mb-3">
+                        <label>Nueva contraseña</label>
+                        <input type="password" name="nuevaContrasenia" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Repetir contraseña</label>
+                        <input type="password" name="repetirContrasenia" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Guardar nueva contraseña</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
