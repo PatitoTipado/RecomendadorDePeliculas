@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RecomendadorDePeliculas.Entidades.Models;
 using RecomendadorDePeliculas.Logica;
-using Microsoft.AspNetCore.Authorization;
+using RecomendadorDePeliculas.Web.Services;
 using System.Security.Claims;
+
 
 namespace RecomendadorDePeliculas.Web.Controllers
 {
@@ -12,8 +15,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
     public class LoginController : Controller
     {
         private IUsuarioLogica _usuarioLogica;
-        public LoginController(IUsuarioLogica usuarioLogica) {
-            _usuarioLogica= usuarioLogica;
+        private readonly EmailService _emailService;
+        public LoginController(IUsuarioLogica usuarioLogica, EmailService emailService)
+        {
+            _usuarioLogica = usuarioLogica;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -104,12 +110,78 @@ namespace RecomendadorDePeliculas.Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult ReestablecerContrasenia(string token)
+        {
+            var usuario = _usuarioLogica.ObtenerPorToken(token);
+
+            if (usuario == null || usuario.TokenExpiracion < DateTime.Now)
+            {
+                TempData["Mensaje"] = "El enlace es inválido o ha expirado.";
+                return RedirectToAction("Login");
+            }
+
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ReestablecerContrasenia(string token, string nuevaContrasenia, string repetirContrasenia)
+        {
+            if (nuevaContrasenia != repetirContrasenia)
+            {
+                ViewBag.Token = token;
+                TempData["Mensaje"] = "Las contraseñas no coinciden.";
+                return View();
+            }
+
+            var usuario = _usuarioLogica.ObtenerPorToken(token);
+
+            if (usuario == null || usuario.TokenExpiracion < DateTime.Now)
+            {
+                TempData["Mensaje"] = "El enlace es inválido o ha expirado.";
+                return RedirectToAction("Login");
+            }
+
+            var hasher = new PasswordHasher<Usuario>();
+            usuario.ContraseniaHash = hasher.HashPassword(usuario, nuevaContrasenia);
+            usuario.TokenRecuperacion = null;
+            usuario.TokenExpiracion = null;
+
+            _usuarioLogica.Actualizar(usuario);
+
+            TempData["aviso"] = "Contraseña actualizada correctamente. Ahora puedes iniciar sesión.";
+            return RedirectToAction("Login");
+        }
+
+
         [HttpPost]
         public IActionResult RecuperarContrasenia(string correo)
         {
-            //enviar correo si esta logeado
-            TempData["aviso"] = "Si el correo está registrado, recibirás un mensaje pronto verifique su correo";
+            var usuario = _usuarioLogica.ObtenerPorCorreo(correo);
+            if (usuario != null)
+            {
+                // Generar token
+                var token = Guid.NewGuid().ToString();
+                usuario.TokenRecuperacion = token;
+                usuario.TokenExpiracion = DateTime.Now.AddHours(1); // válido por 1 hora
+
+                _usuarioLogica.Actualizar(usuario); // Guardar en DB
+
+                var enlace = Url.Action("ReestablecerContrasenia", "Login", new { token = token }, Request.Scheme);
+
+                string mensaje = $@"
+            <h2>Recuperación de contraseña</h2>
+            <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+            <p><a href='{enlace}'>Restablecer contraseña</a></p>
+            <p>Este enlace será válido por 1 hora.</p>";
+
+                _emailService.EnviarEmail(usuario.Correo, "Recuperación de contraseña", mensaje);
+            }
+
+            TempData["aviso"] = "Si el correo está registrado, recibirás un mensaje pronto. Verifica tu bandeja de entrada.";
             return View("login");
         }
+
     }
 }
