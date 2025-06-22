@@ -2,7 +2,7 @@
 
 
 <div class="container mt-3 mb-4 text-end">
-    <a class="btn btn-outline-secondary" asp-action="Historial" asp-controller="Home">Ver mi historial</a>
+    <a class="btn btn-outline-primary" asp-action="Historial" asp-controller="Home">Ver mi historial</a>
     <a href="@Url.Action("Generos", "Home")" class="btn btn-outline-primary">
         Modificar géneros favoritos
     </a>
@@ -38,11 +38,21 @@
                                     <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
                                     <p class="card-text"><strong>ID Interno:</strong> @pelicula.Id</p>
                                     <p class="card-text"><strong>TMDB ID:</strong> @pelicula.TmdbId</p>
-                                    <button class="btn btn-sm btn-outline-success mt-2" onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title','@pelicula.Genres')">¿Es para mí?</button>
+                                    <button class="btn btn-sm fw-semibold text-white mt-2"
+                                            style="background-color: #f7af07; border-radius: 6px; transition: background-color 0.3s ease;"
+                                            onmouseover="this.style.backgroundColor='#e6a841'"
+                                            onmouseout="this.style.backgroundColor='#ffb84d'"
+                                            onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title','@pelicula.Genres')">
+                                        ¿Es para mí?
+                                    </button>
+
                                     <a asp-controller="Home"
                                        asp-action="Resenar"
                                        asp-route-id="@pelicula.Id"
-                                       class="btn btn-sm btn-outline-info mt-2">
+                                       class="btn btn-sm fw-semibold text-white mt-2"
+                                       style="background-color: #ff6b00; border-radius: 6px; transition: background-color 0.3s ease;"
+                                       onmouseover="this.style.backgroundColor='#e65c00'"
+                                       onmouseout="this.style.backgroundColor='#ff6b00'">
                                         Añadir reseña
                                     </a>
                                 </div>

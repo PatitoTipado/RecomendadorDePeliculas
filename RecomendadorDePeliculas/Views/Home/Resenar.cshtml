@@ -1,39 +1,55 @@
 ﻿@model RecomendadorDePeliculas.Entidades.Models.Pelicula
 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<div class="reseña-container">
-    <div class="reseña-box">
-        <h2 class="reseña-title">Reseñar película</h2>
-        <h3 class="reseña-movie-title">@Model.Title</h3>
+<div class="container mt-5">
+    <div class="mx-auto p-4 bg-white shadow-sm" style="max-width: 500px; border-radius: 16px;">
+        <h2 class="fw-bold mb-3" style="color: #ff6b00; font-size: 1.8rem;">
+            <i class="bi bi-star-fill"></i> Reseñar Película
+        </h2>
+
+        <h4 class="text-muted mb-4 text-center">@Model.Title</h4>
 
         <form asp-action="Resenar" method="post">
             <input type="hidden" name="peliculaId" value="@Model.Id" />
             <input type="hidden" name="peliculaGenero" value="@Model.Genres" />
 
-
-            <div class="reseña-group">
-                <label for="calificacion">Puntaje (0 a 5):</label><br />
+            <div class="mb-3">
+                <label for="calificacion" class="form-label fw-semibold text-dark">Puntaje (0 a 5):</label>
                 <input type="number"
                        id="calificacion"
                        name="calificacion"
+                       class="form-control rounded-3"
                        min="0" max="5"
-                       required
-                       class="reseña-input" />
+                       required />
             </div>
 
-            <div class="reseña-group">
-                <label for="comentario">Comentario (opcional):</label><br />
+            <div class="mb-3">
+                <label for="comentario" class="form-label fw-semibold text-dark">Comentario (opcional):</label>
                 <textarea id="comentario"
                           name="comentario"
+                          class="form-control rounded-3"
                           rows="4"
-                          class="reseña-textarea"
-                          placeholder="Escribí tu opinión... (opcional)">
-                </textarea>
+                          placeholder="Escribí tu opinión... (opcional)"></textarea>
             </div>
 
-            <div class="reseña-actions">
-                <button type="submit" class="reseña-submit">Guardar reseña</button>
+            <div class="text-center mt-4">
+                <button type="submit"
+                        class="btn text-white fw-bold px-4"
+                        style="background-color: #ff6b00; border-radius: 8px; transition: background-color 0.3s ease;"
+                        onmouseover="this.style.backgroundColor='#e65c00'"
+                        onmouseout="this.style.backgroundColor='#ff6b00'">
+                    Guardar reseña
+                </button>
             </div>
         </form>
+    </div>
+
+    <div class="text-center mt-4">
+        <a class="btn btn-outline-secondary btn-volver-inicio" href="@Url.Action("CalificarPeliculas", "Home")">
+            ← Volver al inicio
+        </a>
     </div>
 </div>
