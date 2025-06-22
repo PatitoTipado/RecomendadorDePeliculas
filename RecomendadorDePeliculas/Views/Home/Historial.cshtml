@@ -1,38 +1,54 @@
 ﻿@model IEnumerable<RecomendadorDePeliculas.Entidades.Models.Historial>
 
-<h2>Historial de Reseñas</h2>
+<div class="container mt-5">
+    <div class="card shadow-sm" style="border-radius: 16px;">
+        <div class="card-body">
+            <h2 class="mb-4 fw-bold" style="color: #ff6b00;">
+                <i class="bi bi-clock-history"></i> Historial de Reseñas
+            </h2>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Película ID</th>
-            <th>Calificación</th>
-            <th>Comentario</th>
-            <th>Fecha</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.PeliculaId</td>
-                <td>@item.Calificacion</td>
-                <td>@item.Comentario</td>
-                <td>@item.FechaReseña.ToString("dd/MM/yyyy")</td>
-                <td>
-                    <a href="/Home/Resenar?id=@item.PeliculaId" class="btn btn-sm btn-outline-primary">
-                        Editar
-                    </a>
-
-                    <form method="post" asp-action="EliminarResena" style="display:inline;">
-                        <input type="hidden" name="peliculaId" value="@item.PeliculaId" />
-                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
-                            Borrar
-                        </button>
-                    </form>
-                </td>
-
-            </tr>
-        }
-    </tbody>
-</table>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Película ID</th>
+                            <th scope="col">Calificación</th>
+                            <th scope="col">Comentario</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.PeliculaId</td>
+                                <td>@item.Calificacion</td>
+                                <td>@item.Comentario</td>
+                                <td>@item.FechaReseña.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="/Home/Resenar?id=@item.PeliculaId" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </a>
+                                        <form method="post" asp-action="EliminarResena" style="display:inline;">
+                                            <input type="hidden" name="peliculaId" value="@item.PeliculaId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Borrar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a class="btn btn-outline-secondary btn-volver-inicio" href="@Url.Action("CalificarPeliculas", "Home")">
+            ← Volver al inicio
+        </a>
+    </div>
+</div>

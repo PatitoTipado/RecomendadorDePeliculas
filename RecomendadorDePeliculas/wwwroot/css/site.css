@@ -124,7 +124,7 @@ body {
 }
 
 
-/*RESENIAS*/
+/*RESENIAS
 .reseña-container {
     display: flex;
     justify-content: center;
@@ -180,6 +180,8 @@ body {
     .reseña-submit:hover {
         background-color: #218838;
     }
+
+ */
 
 .editar-perfil-container {
     max-width: 700px;
