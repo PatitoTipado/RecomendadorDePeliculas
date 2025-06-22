@@ -8,6 +8,8 @@
 
         <form asp-action="Resenar" method="post">
             <input type="hidden" name="peliculaId" value="@Model.Id" />
+            <input type="hidden" name="peliculaGenero" value="@Model.Genres" />
+
 
             <div class="reseña-group">
                 <label for="calificacion">Puntaje (0 a 5):</label><br />

@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 
 namespace RecomendadorDePeliculas.Logica
 {
@@ -17,8 +18,9 @@ namespace RecomendadorDePeliculas.Logica
     {
         List<Pelicula> ObtenerPeliculasACalificarQueNoCalificoAntes(int userId, params string[] preferencias);
         void RealizarPrediccion(int v, int v1);
+        float RealizarPrediccionScore(int v, int v1);
         Pelicula ObtenerPeliculaPorId(int id);
-        void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario);
+        void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string Genero);
         List<Historial> ObtenerHistorialDeUsuario(int userId);
         void EliminarResena(int usuarioId, int peliculaId);
 
@@ -56,6 +58,10 @@ namespace RecomendadorDePeliculas.Logica
         {
             _modelRecomender.UseModelForSinglePrediction(v, v1);
         }
+        public float RealizarPrediccionScore(int v, int v1)
+        {
+           return  _modelRecomender.UseModelForSinglePredictionScore(v, v1);
+        }
 
 
         public Pelicula ObtenerPeliculaPorId(int id)
@@ -64,8 +70,9 @@ namespace RecomendadorDePeliculas.Logica
         }
 
 
-        public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario)
+        public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string genero)
         {
+            GuardarResenaCsv(usuarioId, peliculaId, calificacion);
             var existente = _context.Historials
                 .FirstOrDefault(h => h.UsuarioId == usuarioId && h.PeliculaId == peliculaId);
 
@@ -75,6 +82,7 @@ namespace RecomendadorDePeliculas.Logica
                 existente.Calificacion = calificacion;
                 existente.Comentario = comentario;
                 existente.FechaReseña = DateTime.Now;
+
             }
             else
             {
@@ -86,7 +94,8 @@ namespace RecomendadorDePeliculas.Logica
                     Calificacion = calificacion,
                     Comentario = comentario,
                     FechaReseña = DateTime.Now,
-                    IsCalificada = true
+                    IsCalificada = true,
+                    Generos = genero
                 };
 
                 _context.Historials.Add(historial);
@@ -95,6 +104,12 @@ namespace RecomendadorDePeliculas.Logica
             _context.SaveChanges();
         }
 
+        public bool GuardarResenaCsv(int usuarioId, int peliculaId, double calificacion)
+        {
+            _modelRecomender.insertRatingOnModel(usuarioId, peliculaId, (float)calificacion);
+            return true;
+        }
+          
         public void EliminarResena(int usuarioId, int peliculaId)
         {
             var reseña = _context.Historials.FirstOrDefault(h =>
