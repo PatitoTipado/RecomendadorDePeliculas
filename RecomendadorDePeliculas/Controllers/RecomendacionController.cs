@@ -4,6 +4,7 @@ using RecomendadorDePeliculas.Logica;
 using static System.Formats.Asn1.AsnWriter;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace RecomendadorDePeliculas.Web.Controllers
 {
@@ -13,12 +14,14 @@ namespace RecomendadorDePeliculas.Web.Controllers
         private IRecomenderLogica _peliculaLogica;
         private ITmdbLogica _tmdbLogica;
         private readonly IRecomendadorPeliculasContext _context;
+        private readonly IConfiguration _config;
 
-        public RecomendacionController(IRecomenderLogica peliculaLogica, ITmdbLogica tmdbLogica, IRecomendadorPeliculasContext context)
+        public RecomendacionController(IRecomenderLogica peliculaLogica, ITmdbLogica tmdbLogica, IRecomendadorPeliculasContext context, IConfiguration config)
         {
             _peliculaLogica = peliculaLogica;
             _tmdbLogica = tmdbLogica;
             _context = context;
+            _config = config;
         }
         [HttpPost]
         public async Task<IActionResult> Recomendar([FromBody] RecomendacionRequest req)
@@ -43,8 +46,9 @@ namespace RecomendadorDePeliculas.Web.Controllers
         {
      
             var client = new HttpClient();
+            var apiKey_settings = _config.GetSection("OMDB");
             var titulo_imdb = LimpiarTitulo(tituloPelicula);
-            var apiKey = "4b1fb40e"; // Reemplazá con tu clave real
+            var apiKey = apiKey_settings["ApiKey"]; 
             var url = $"https://www.omdbapi.com/?t={titulo_imdb}&apikey={apiKey}";
 
             var response = await client.GetAsync(url);
