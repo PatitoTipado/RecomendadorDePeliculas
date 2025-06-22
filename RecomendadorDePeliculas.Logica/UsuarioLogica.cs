@@ -11,6 +11,9 @@ namespace RecomendadorDePeliculas.Logica
         bool ValidarLogin(string correo, string contrasenia);
         Usuario ObtenerPorId(int id);
         void Actualizar(Usuario usuario);
+        Usuario ObtenerPorCorreo(string correo);
+        Usuario ObtenerPorToken(string token);
+
 
         // ✅ Nuevo método
         bool CorreoEnUsoPorOtroUsuario(int idUsuarioActual, string correo);
@@ -88,6 +91,17 @@ namespace RecomendadorDePeliculas.Logica
             return _context.Usuarios
                 .Any(u => u.Correo == correo && u.Id != idUsuarioActual);
         }
+
+        public Usuario ObtenerPorCorreo(string correo)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Correo == correo);
+        }
+
+        public Usuario ObtenerPorToken(string token)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.TokenRecuperacion == token);
+        }
+
     }
 }
 

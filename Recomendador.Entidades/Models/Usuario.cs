@@ -17,4 +17,9 @@ public partial class Usuario
 
     public virtual ICollection<UsuarioGenero> UsuarioGeneros { get; set; } = new List<UsuarioGenero>();
 
+    public string? TokenRecuperacion { get; set; }
+
+    public DateTime? TokenExpiracion { get; set; }
+
+
 }

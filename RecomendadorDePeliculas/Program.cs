@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;
 using RecomendadorDePeliculas.Entidades.Models;
 using RecomendadorDePeliculas.Logica;
+using RecomendadorDePeliculas.Web.Services;
 using RecomendadorDePeliulas.ML;
 using System.Reflection.Metadata.Ecma335;
 
@@ -13,6 +14,8 @@ var env = builder.Environment;
 // Cargar configuración desde appsettings.json y variables de entorno
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddScoped<EmailService>();
+
 var config = builder.Configuration;
 string apiKey = config["TMDB:ApiKey"];
 string accesToken = config["TMDB:AccesToken"];
