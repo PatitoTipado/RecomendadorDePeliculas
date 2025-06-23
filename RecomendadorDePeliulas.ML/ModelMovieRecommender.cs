@@ -175,9 +175,9 @@ namespace RecomendadorDePeliulas.ML
                 return;
             }
 
-            using (var writer = new StreamWriter(_dataPath, true)) // Guardar nuevos ratings
+            using (var writer = new StreamWriter(_dataPath, true))
             {
-                writer.WriteLine($"{userId},{movieId},{rating},{DateTime.Now}");
+                writer.WriteLine($"{userId},{movieId},{rating},{((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()}");
             }
             BuildAndSaveModel();
 

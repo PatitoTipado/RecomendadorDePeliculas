@@ -13,14 +13,12 @@ namespace RecomendadorDePeliculas.Web.Controllers
     {
         private IRecomenderLogica _peliculaLogica;
         private ITmdbLogica _tmdbLogica;
-        private readonly IRecomendadorPeliculasContext _context;
         private readonly IConfiguration _config;
 
-        public RecomendacionController(IRecomenderLogica peliculaLogica, ITmdbLogica tmdbLogica, IRecomendadorPeliculasContext context, IConfiguration config)
+        public RecomendacionController(IRecomenderLogica peliculaLogica, ITmdbLogica tmdbLogica, IConfiguration config)
         {
             _peliculaLogica = peliculaLogica;
             _tmdbLogica = tmdbLogica;
-            _context = context;
             _config = config;
         }
         [HttpPost]
@@ -75,9 +73,6 @@ namespace RecomendadorDePeliculas.Web.Controllers
             var index = tituloConAnio.LastIndexOf('(');
             return index > 0 ? tituloConAnio.Substring(0, index).Trim() : tituloConAnio;
         }
-
-
-
 
     }
 }

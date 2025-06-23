@@ -65,6 +65,8 @@ builder.Services.AddScoped<ITmdbLogica, TmdbLogica>(sp =>
 
 builder.Services.AddScoped<IUsuarioLogica,UsuarioLogica>();
 
+builder.Services.AddScoped<IGeneroLogica,GeneroLogica>();
+
 builder.Services.AddScoped<IRecomenderLogica,RecomenderLogica>();
 
 builder.Services.AddAuthorization(options =>

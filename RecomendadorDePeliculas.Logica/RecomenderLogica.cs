@@ -1,16 +1,5 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using RecomendadorDePeliculas.Entidades.DTOS;
-using RecomendadorDePeliculas.Entidades.Models;
+﻿using RecomendadorDePeliculas.Entidades.Models;
 using RecomendadorDePeliulas.ML;
-using System;
-using System.Collections.Generic;
-using System.Formats.Asn1;
-using System.Globalization;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
 
 namespace RecomendadorDePeliculas.Logica
 {
@@ -23,8 +12,6 @@ namespace RecomendadorDePeliculas.Logica
         void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string Genero);
         List<Historial> ObtenerHistorialDeUsuario(int userId);
         void EliminarResena(int usuarioId, int peliculaId);
-
-
     }
     public class RecomenderLogica : IRecomenderLogica
     {
@@ -68,7 +55,6 @@ namespace RecomendadorDePeliculas.Logica
         {
             return _peliculaLogica.ObtenerPeliculaPorId(id);
         }
-
 
         public void GuardarResena(int usuarioId, int peliculaId, double calificacion, string comentario,string genero)
         {
@@ -131,7 +117,6 @@ namespace RecomendadorDePeliculas.Logica
                 .Where(h => h.UsuarioId == userId && h.IsCalificada)
                 .ToList();
         }
-
 
     }
 }

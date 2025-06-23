@@ -13,9 +13,6 @@ namespace RecomendadorDePeliculas.Logica
         void Actualizar(Usuario usuario);
         Usuario ObtenerPorCorreo(string correo);
         Usuario ObtenerPorToken(string token);
-
-
-        // ✅ Nuevo método
         bool CorreoEnUsoPorOtroUsuario(int idUsuarioActual, string correo);
     }
 
@@ -85,7 +82,6 @@ namespace RecomendadorDePeliculas.Logica
             }
         }
 
-        // ✅ Nuevo método para validación desde el ViewModel
         public bool CorreoEnUsoPorOtroUsuario(int idUsuarioActual, string correo)
         {
             return _context.Usuarios

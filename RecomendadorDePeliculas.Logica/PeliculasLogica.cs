@@ -9,13 +9,9 @@ namespace RecomendadorDePeliculas.Logica
 {
     public interface IPeliculasLogica
     {
-        //public List<Pelicula> obtenerPeliculas(List<int> movieIdsAExcluir, string generoDePreferencia, string segundoGenero);
         public List<Pelicula> obtenerPeliculas(List<int> movieIdsAExcluir, params string[] generos);
-
         public List<Pelicula> obtenerPeliculas(params string[] generos);
-        //List<Pelicula> obtenerPeliculas(string preferencia, string preferenciaSecundaria);
         public Pelicula ObtenerPeliculaPorId(int id);
-
         List<Pelicula> BuscarPeliculasPorTitulo(string titulo);
     }
     public class PeliculasLogica : IPeliculasLogica
@@ -36,72 +32,6 @@ namespace RecomendadorDePeliculas.Logica
             _moviePath = moviePath;
         }
 
-        /*public List<Pelicula> obtenerPeliculas(List<int> movieIdsAExcluir, string generoDePreferencia, string segundoGenero)
-        {
-
-            using (var reader = new StreamReader(_moviePath))
-            using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-            {
-                var peliculas = csv.GetRecords<dynamic>().Select(p =>
-                {
-                    string tmdbIdRaw = p.tmdbId?.ToString().Trim(); // Asegurar que sea string y limpiar espacios
-
-                    return new Pelicula
-                    {
-                        Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0, // Si falla, asigna 0
-                        Title = p.title,
-                        Genres = p.genres,
-                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
-                            ? (int)tmdbIdFloat // Convertir correctamente
-                            : 0 // Si está vacío, asignar 0
-                    };
-                }).ToList();
-
-                var peliculasFiltradas = peliculas
-                    .Where(p => p.Genres.Split('|').Contains(generoDePreferencia) || p.Genres.Split('|').Contains(segundoGenero)) // Filtrar por géneros
-                    .Where(p => !movieIdsAExcluir.Contains(p.Id)) // Excluir películas por ID
-                    .OrderBy(x => Guid.NewGuid()) // Ordenar aleatoriamente
-                    .Take(20) // Obtener 10 películas aleatorias
-                    .ToList();
-
-                return peliculasFiltradas;
-            }
-        }
-
-        public List<Pelicula> obtenerPeliculas(string preferencia, string preferenciaSecundaria)
-        {
-            using (var reader = new StreamReader(_moviePath))
-            using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-            {
-
-                var peliculas = csv.GetRecords<dynamic>().Select(p =>
-                {
-                    string tmdbIdRaw = p.tmdbId?.ToString().Trim(); // Asegurar que sea string y limpiar espacios
-
-                    return new Pelicula
-                    {
-                        Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0, // Si falla, asigna 0
-                        Title = p.title,
-                        Genres = p.genres,
-                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
-                            ? (int)tmdbIdFloat // Convertir correctamente
-                            : 0 // Si está vacío, asignar 0
-                    };
-                }).ToList();
-
-
-
-                var peliculasFiltradas = peliculas
-                    .Where(p => p.Genres.Split('|').Contains(preferencia) || p.Genres.Split('|').Contains(preferenciaSecundaria)) // Filtrar por géneros
-                    .OrderBy(x => Guid.NewGuid()) // Ordenar aleatoriamente
-                    .Take(20) // Obtener 10 películas aleatorias
-                    .ToList();
-
-                return peliculasFiltradas;
-
-            }
-        }*/
-
         public List<Pelicula> obtenerPeliculas(List<int> movieIdsAExcluir, params string[] generos)
         {
             using (var reader = new StreamReader(_moviePath))
@@ -110,15 +40,17 @@ namespace RecomendadorDePeliculas.Logica
                 var peliculas = csv.GetRecords<dynamic>().Select(p =>
                 {
                     string tmdbIdRaw = p.tmdbId?.ToString().Trim();
+                    //Console.WriteLine($"TmdbId bruto: {tmdbIdRaw}");
 
                     return new Pelicula
                     {
                         Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0,
                         Title = p.title,
                         Genres = p.genres,
-                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
-                            ? (int)tmdbIdFloat
-                            : 0
+                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && tmdbIdRaw.Contains(".")
+                        ? int.TryParse(tmdbIdRaw.Split('.')[0], out int cleanId) ? cleanId : 0
+                        : int.TryParse(tmdbIdRaw, out int directId) ? directId : 0
+
                     };
                 }).ToList();
 
@@ -179,15 +111,17 @@ namespace RecomendadorDePeliculas.Logica
                 var peliculas = csv.GetRecords<dynamic>().Select(p =>
                 {
                     string tmdbIdRaw = p.tmdbId?.ToString().Trim();
+                    //Console.WriteLine($"TmdbId bruto: {tmdbIdRaw}");
 
                     return new Pelicula
                     {
                         Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0,
                         Title = p.title,
                         Genres = p.genres,
-                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
-                            ? (int)tmdbIdFloat
-                            : 0
+                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && tmdbIdRaw.Contains(".")
+                        ? int.TryParse(tmdbIdRaw.Split('.')[0], out int cleanId) ? cleanId : 0
+                        : int.TryParse(tmdbIdRaw, out int directId) ? directId : 0
+
                     };
                 }).ToList();
 
