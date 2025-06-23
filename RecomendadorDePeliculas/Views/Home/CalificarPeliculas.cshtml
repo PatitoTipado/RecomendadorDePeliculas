@@ -1,4 +1,4 @@
-﻿@model IEnumerable<RecomendadorDePeliculas.Entidades.Models.Pelicula>
+﻿@model IEnumerable<RecomendadorDePeliculas.Entidades.DTOS.PeliculaConImagenDTO>
 
 <div class="container mt-3 mb-4 text-end">
     <a class="btn btn-outline-primary" asp-action="Historial" asp-controller="Home">Ver mis reseñas</a>
@@ -8,7 +8,6 @@
 </div>
 
 <div class="container mt-4">
-
     <form method="get" asp-action="BuscarPeliculas" asp-controller="Home" class="mb-4">
         <div class="input-group">
             <input type="text" name="titulo" class="form-control" placeholder="Buscar película por título..." />
@@ -27,16 +26,26 @@
         <div class="row row-cols-1 row-cols-md-2 g-4">
             @foreach (var pelicula in Model)
             {
-            <div class="col">
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
-                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                @if (!string.IsNullOrEmpty(pelicula.ImagenUrl))
+                                {
+                                    <img src="@pelicula.ImagenUrl" class="img-fluid rounded-start" alt="Póster de @pelicula.Title" />
+                                }
+                                else
+                                {
+                                    <div class="text-muted text-center mt-4">Sin imagen</div>
+                                }
+                            </div>
                             <div class="col-md-8">
                                 <div class="card-body">
                                     <h5 class="card-title">@pelicula.Title</h5>
                                     <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
                                     <p class="card-text"><strong>ID Interno:</strong> @pelicula.Id</p>
                                     <p class="card-text"><strong>TMDB ID:</strong> @pelicula.TmdbId</p>
+
                                     <button class="btn btn-sm fw-semibold text-white mt-2"
                                             style="background-color: #f7af07; border-radius: 6px; transition: background-color 0.3s ease;"
                                             onmouseover="this.style.backgroundColor='#e6a841'"
@@ -62,11 +71,9 @@
             }
         </div>
     }
-
 </div>
 
 <div id="popup-recomendacion" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%);
      background:#eef; padding:15px; border-radius:8px; z-index:1000;"></div>
-
 
 <script src="~/js/calificar.js"></script>

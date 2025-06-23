@@ -77,20 +77,36 @@ namespace RecomendadorDePeliculas.Web.Controllers
                   .ToArray();
             }
 
-            TempData["generos"] = generosFinales;
+            var peliculas = _peliculaLogica.ObtenerPeliculasACalificarQueNoCalificoAntes(userId, generosFinales);
 
+            var peliculasConImagen = new List<PeliculaConImagenDTO>();
 
-            List<Pelicula> pelicula = _peliculaLogica.ObtenerPeliculasACalificarQueNoCalificoAntes(userId, generosFinales);
-
-            if (pelicula.Count == 0)
+            foreach (var pelicula in peliculas)
             {
-                TempData["Mensaje"] = "No hay películas disponibles con los géneros seleccionados seleccione otro genero.";
-                return RedirectToAction("Generos");
+                if(pelicula.Adult==false)
+                {                
+                    string? imagen = null;
+
+                    if (pelicula.TmdbId.HasValue && pelicula.TmdbId > 0)
+                    {
+                        var detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
+                        imagen = detalles?.PosterPath != null
+                            ? $"https://image.tmdb.org/t/p/w500{detalles.PosterPath}"
+                            : null;
+                    }
+
+                    peliculasConImagen.Add(new PeliculaConImagenDTO
+                    {
+                        Id = pelicula.Id,
+                        Title = pelicula.Title,
+                        Genres = pelicula.Genres,
+                        TmdbId = pelicula.TmdbId,
+                        ImagenUrl = imagen
+                    });
+                }
             }
 
-            _tmdbLogica.ConseguirPeliculas(pelicula.First().Id);
-            List<PeliculaCalificacionDTO> peliculas = _tmdbLogica.obtenerCaracteristicasDePeliculas(pelicula);
-            return View(pelicula);
+            return View(peliculasConImagen);
         }
 
         private string[] ParsearPeliculas(List<string> favoritas)
@@ -159,8 +175,33 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpGet]
         public IActionResult BuscarPeliculas(string titulo)
         {
-            var resultados = peliculasLogica.BuscarPeliculasPorTitulo(titulo);
-            return View("CalificarPeliculas", resultados);
+            var peliculas = peliculasLogica.BuscarPeliculasPorTitulo(titulo);
+
+            var peliculasConImagen = new List<PeliculaConImagenDTO>();
+
+            foreach (var pelicula in peliculas)
+            {
+                string? imagen = null;
+
+                if (pelicula.TmdbId.HasValue && pelicula.TmdbId > 0)
+                {
+                    var detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
+                    imagen = detalles?.PosterPath != null
+                        ? $"https://image.tmdb.org/t/p/w500{detalles.PosterPath}"
+                        : null;
+                }
+
+                peliculasConImagen.Add(new PeliculaConImagenDTO
+                {
+                    Id = pelicula.Id,
+                    Title = pelicula.Title,
+                    Genres = pelicula.Genres,
+                    TmdbId = pelicula.TmdbId,
+                    ImagenUrl = imagen
+                });
+            }
+
+            return View("CalificarPeliculas", peliculasConImagen);
         }
 
     }

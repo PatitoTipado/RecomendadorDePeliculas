@@ -40,15 +40,17 @@ namespace RecomendadorDePeliculas.Logica
                 var peliculas = csv.GetRecords<dynamic>().Select(p =>
                 {
                     string tmdbIdRaw = p.tmdbId?.ToString().Trim();
+                    //Console.WriteLine($"TmdbId bruto: {tmdbIdRaw}");
 
                     return new Pelicula
                     {
                         Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0,
                         Title = p.title,
                         Genres = p.genres,
-                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
-                            ? (int)tmdbIdFloat
-                            : 0
+                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && tmdbIdRaw.Contains(".")
+                        ? int.TryParse(tmdbIdRaw.Split('.')[0], out int cleanId) ? cleanId : 0
+                        : int.TryParse(tmdbIdRaw, out int directId) ? directId : 0
+
                     };
                 }).ToList();
 
@@ -109,15 +111,17 @@ namespace RecomendadorDePeliculas.Logica
                 var peliculas = csv.GetRecords<dynamic>().Select(p =>
                 {
                     string tmdbIdRaw = p.tmdbId?.ToString().Trim();
+                    //Console.WriteLine($"TmdbId bruto: {tmdbIdRaw}");
 
                     return new Pelicula
                     {
                         Id = int.TryParse(p.movieId?.ToString(), out int movieId) ? movieId : 0,
                         Title = p.title,
                         Genres = p.genres,
-                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && float.TryParse(tmdbIdRaw, out float tmdbIdFloat)
-                            ? (int)tmdbIdFloat
-                            : 0
+                        TmdbId = !string.IsNullOrEmpty(tmdbIdRaw) && tmdbIdRaw.Contains(".")
+                        ? int.TryParse(tmdbIdRaw.Split('.')[0], out int cleanId) ? cleanId : 0
+                        : int.TryParse(tmdbIdRaw, out int directId) ? directId : 0
+
                     };
                 }).ToList();
 
