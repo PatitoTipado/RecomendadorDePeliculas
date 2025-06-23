@@ -7,7 +7,7 @@ namespace RecomendadorDePeliculas.Logica
 {
     public interface ITmdbLogica
     {
-        public Movie ConseguirPeliculas(int IdTmdb);
+        public Movie ConseguirPeliculas(int idTmdb, string idioma = "es");
         List<PeliculaCalificacionDTO> obtenerCaracteristicasDePeliculas(List<Pelicula> peliculas);
     }
     public class TmdbLogica:ITmdbLogica
@@ -25,10 +25,12 @@ namespace RecomendadorDePeliculas.Logica
 
         }
 
-        public Movie ConseguirPeliculas(int idTmdb) {
-            Movie movie = _client.GetMovieAsync(idTmdb).Result;
+        public Movie ConseguirPeliculas(int idTmdb, string idioma = "es")
+        {
+            Movie movie = _client.GetMovieAsync(idTmdb, idioma).Result;
             return movie;
         }
+
 
         public List<PeliculaCalificacionDTO> obtenerCaracteristicasDePeliculas(List<Pelicula> peliculas)
         {

@@ -95,7 +95,7 @@ namespace RecomendadorDePeliculas.Logica
             _modelRecomender.insertRatingOnModel(usuarioId, peliculaId, (float)calificacion);
             return true;
         }
-          
+
         public void EliminarResena(int usuarioId, int peliculaId)
         {
             var reseña = _context.Historials.FirstOrDefault(h =>
@@ -103,13 +103,11 @@ namespace RecomendadorDePeliculas.Logica
 
             if (reseña != null)
             {
-                reseña.IsCalificada = false;
-                reseña.Calificacion = 0;
-                reseña.Comentario = null;
-                reseña.FechaReseña = DateTime.Now;
+                _context.Historials.Remove(reseña);  
                 _context.SaveChanges();
             }
         }
+
 
         public List<Historial> ObtenerHistorialDeUsuario(int userId)
         {
