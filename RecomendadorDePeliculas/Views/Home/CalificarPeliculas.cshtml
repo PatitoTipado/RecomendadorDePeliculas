@@ -28,41 +28,52 @@
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm">
-                        <div class="row g-0">
+                        <div class="row g-0 h-100">
                             <div class="col-md-4">
                                 @if (!string.IsNullOrEmpty(pelicula.ImagenUrl))
                                 {
-                                    <img src="@pelicula.ImagenUrl" class="img-fluid rounded-start" alt="Póster de @pelicula.Title" />
+                                    <img src="@pelicula.ImagenUrl" class="img-fluid rounded-start h-100 object-fit-cover" alt="Póster de @pelicula.Title" />
                                 }
                                 else
                                 {
                                     <div class="text-muted text-center mt-4">Sin imagen</div>
                                 }
                             </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">@pelicula.Title</h5>
-                                    <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
-                                    <p class="card-text"><strong>ID Interno:</strong> @pelicula.Id</p>
-                                    <p class="card-text"><strong>TMDB ID:</strong> @pelicula.TmdbId</p>
+                            <div class="col-md-8 d-flex">
+                                <div class="card-body d-flex flex-column justify-content-between w-100">
+                                    <div>
+                                        <h5 class="card-title">@pelicula.Title</h5>
+                                        <p class="card-text"><strong>Géneros:</strong> @pelicula.Genres</p>
 
-                                    <button class="btn btn-sm fw-semibold text-white mt-2"
-                                            style="background-color: #f7af07; border-radius: 6px; transition: background-color 0.3s ease;"
-                                            onmouseover="this.style.backgroundColor='#e6a841'"
-                                            onmouseout="this.style.backgroundColor='#ffb84d'"
-                                            onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title','@pelicula.Genres')">
-                                        ¿Es para mí?
-                                    </button>
+                                        @if (!string.IsNullOrWhiteSpace(pelicula.Sinopsis))
+                                        {
+                                            var sinopsisCorta = pelicula.Sinopsis.Length > 300
+                                            ? pelicula.Sinopsis.Substring(0, 300) + " [...]"
+                                            : pelicula.Sinopsis;
 
-                                    <a asp-controller="Home"
-                                       asp-action="Resenar"
-                                       asp-route-id="@pelicula.Id"
-                                       class="btn btn-sm fw-semibold text-white mt-2"
-                                       style="background-color: #ff6b00; border-radius: 6px; transition: background-color 0.3s ease;"
-                                       onmouseover="this.style.backgroundColor='#e65c00'"
-                                       onmouseout="this.style.backgroundColor='#ff6b00'">
-                                        Añadir reseña
-                                    </a>
+                                            <p class="card-text"><strong>Sinopsis:</strong> @sinopsisCorta</p>
+                                        }
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <button class="btn btn-sm fw-semibold text-white me-2"
+                                                style="background-color: #f7af07; border-radius: 6px; transition: background-color 0.3s ease;"
+                                                onmouseover="this.style.backgroundColor='#e6a841'"
+                                                onmouseout="this.style.backgroundColor='#ffb84d'"
+                                                onclick="obtenerRecomendacion(@pelicula.Id,'@pelicula.Title','@pelicula.Genres')">
+                                            ¿Es para mí?
+                                        </button>
+
+                                        <a asp-controller="Home"
+                                           asp-action="Resenar"
+                                           asp-route-id="@pelicula.Id"
+                                           class="btn btn-sm fw-semibold text-white"
+                                           style="background-color: #ff6b00; border-radius: 6px; transition: background-color 0.3s ease;"
+                                           onmouseover="this.style.backgroundColor='#e65c00'"
+                                           onmouseout="this.style.backgroundColor='#ff6b00'">
+                                            Añadir reseña
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -77,3 +88,6 @@
      background:#eef; padding:15px; border-radius:8px; z-index:1000;"></div>
 
 <script src="~/js/calificar.js"></script>
+
+
+
