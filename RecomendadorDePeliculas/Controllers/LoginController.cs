@@ -11,7 +11,6 @@ using System.Security.Claims;
 
 namespace RecomendadorDePeliculas.Web.Controllers
 {
-    [AllowAnonymous]
     public class LoginController : Controller
     {
         private IUsuarioLogica _usuarioLogica;
@@ -23,12 +22,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                HttpContext.Session.Clear();
+                return Redirect("/Home/CalificarPeliculas");
             }
 
             return View();
@@ -37,6 +35,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> ValidarLogin(string correo,string contrasenia)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/CalificarPeliculas");
+            }
+
             if (_usuarioLogica.ValidarLogin(correo, contrasenia))
             {
                 var claims = new List<Claim>
@@ -64,7 +67,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Login");
         }
 
         [HttpGet]
@@ -72,7 +75,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return Redirect("/Home/Index");
+                return Redirect("/Home/CalificarPeliculas");
             }
 
             return View(new Usuario());
@@ -81,6 +84,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpPost]
         public IActionResult Registrar(Usuario usuario,string rcontra)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/CalificarPeliculas");
+            }
+
             if (!usuario.ContraseniaHash.Equals(rcontra))
             {
                 TempData["rcontra"] = "las contraseñas no coinciden";
@@ -104,7 +112,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return Redirect("/Home/Index");
+                return Redirect("/Home/CalificarPeliculas");
             }
 
             return View();
@@ -113,6 +121,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpGet]
         public IActionResult ReestablecerContrasenia(string token)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/CalificarPeliculas");
+            }
+
             var usuario = _usuarioLogica.ObtenerPorToken(token);
 
             if (usuario == null || usuario.TokenExpiracion < DateTime.Now)
@@ -128,6 +141,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpPost]
         public IActionResult ReestablecerContrasenia(string token, string nuevaContrasenia, string repetirContrasenia)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/CalificarPeliculas");
+            }
+
             if (nuevaContrasenia != repetirContrasenia)
             {
                 ViewBag.Token = token;
@@ -158,6 +176,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpPost]
         public IActionResult RecuperarContrasenia(string correo)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Home/CalificarPeliculas");
+            }
+
             var usuario = _usuarioLogica.ObtenerPorCorreo(correo);
             if (usuario != null)
             {
