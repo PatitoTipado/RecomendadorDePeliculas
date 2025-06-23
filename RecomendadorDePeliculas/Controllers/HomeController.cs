@@ -169,11 +169,10 @@ namespace RecomendadorDePeliculas.Web.Controllers
         public IActionResult Historial()
         {
             int userId = int.Parse(HttpContext.Session.GetString("UserId"));
-
-            var historialUsuario = _peliculaLogica.ObtenerHistorialDeUsuario(userId);
-
-            return View(historialUsuario);
+            var historial = peliculasLogica.ObtenerHistorialConInfo(userId);
+            return View(historial);
         }
+
 
 
         [HttpGet]

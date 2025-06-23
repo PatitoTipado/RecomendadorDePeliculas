@@ -55,8 +55,11 @@ builder.Services.AddSingleton<IModelMovieRecomender>(sp =>
 
 builder.Services.AddScoped<IPeliculasLogica, PeliculasLogica>(sp =>
 {
-    return new PeliculasLogica(moviePath);
+    var context = sp.GetRequiredService<RecomendadorPeliculasContext>();
+    var tmdbLogica = sp.GetRequiredService<ITmdbLogica>();
+    return new PeliculasLogica(moviePath, context, tmdbLogica);
 });
+
 
 builder.Services.AddScoped<ITmdbLogica, TmdbLogica>(sp =>
 {
