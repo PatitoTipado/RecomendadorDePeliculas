@@ -26,7 +26,7 @@ namespace RecomendadorDePeliculas.Logica
         }
 
         public Movie ConseguirPeliculas(int idTmdb) {
-            Movie movie = _client.GetMovieAsync(idTmdb).Result;
+            Movie movie = _client.GetMovieAsync(idTmdb, "es").Result;
             return movie;
         }
 

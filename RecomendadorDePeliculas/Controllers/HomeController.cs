@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RecomendadorDePeliculas.Logica;
 using RecomendadorDePeliculas.Entidades.DTOS;
 using RecomendadorDePeliculas.Entidades.Models;
+using RecomendadorDePeliculas.Logica;
+using TMDbLib.Objects.Movies;
 
 namespace RecomendadorDePeliculas.Web.Controllers
 {
@@ -83,13 +84,14 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
             foreach (var pelicula in peliculas)
             {
-                if(pelicula.Adult==false)
-                {                
+                if (pelicula.Adult == false)
+                {
                     string? imagen = null;
+                    Movie? detalles = null;
 
                     if (pelicula.TmdbId.HasValue && pelicula.TmdbId > 0)
                     {
-                        var detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
+                        detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
                         imagen = detalles?.PosterPath != null
                             ? $"https://image.tmdb.org/t/p/w500{detalles.PosterPath}"
                             : null;
@@ -101,10 +103,12 @@ namespace RecomendadorDePeliculas.Web.Controllers
                         Title = pelicula.Title,
                         Genres = pelicula.Genres,
                         TmdbId = pelicula.TmdbId,
-                        ImagenUrl = imagen
+                        ImagenUrl = imagen,
+                        Sinopsis = detalles?.Overview
                     });
                 }
             }
+
 
             return View(peliculasConImagen);
         }
@@ -182,10 +186,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
             foreach (var pelicula in peliculas)
             {
                 string? imagen = null;
+                Movie? detalles = null;
 
                 if (pelicula.TmdbId.HasValue && pelicula.TmdbId > 0)
                 {
-                    var detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
+                    detalles = _tmdbLogica.ConseguirPeliculas(pelicula.TmdbId.Value);
                     imagen = detalles?.PosterPath != null
                         ? $"https://image.tmdb.org/t/p/w500{detalles.PosterPath}"
                         : null;
@@ -197,12 +202,14 @@ namespace RecomendadorDePeliculas.Web.Controllers
                     Title = pelicula.Title,
                     Genres = pelicula.Genres,
                     TmdbId = pelicula.TmdbId,
-                    ImagenUrl = imagen
+                    ImagenUrl = imagen,
+                    Sinopsis = detalles?.Overview
                 });
             }
 
             return View("CalificarPeliculas", peliculasConImagen);
         }
+
 
     }
 }
