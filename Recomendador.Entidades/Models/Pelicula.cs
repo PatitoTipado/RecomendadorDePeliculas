@@ -12,4 +12,7 @@ public partial class Pelicula
     public string? Genres { get; set; }
 
     public int? TmdbId { get; set; }
+    public bool Adult { get; set; } 
+
+
 }
