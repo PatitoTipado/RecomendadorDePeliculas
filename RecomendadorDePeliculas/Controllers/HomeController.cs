@@ -9,27 +9,24 @@ namespace RecomendadorDePeliculas.Web.Controllers
     {
         private IRecomenderLogica _peliculaLogica;
         private ITmdbLogica _tmdbLogica;
-        private readonly IRecomendadorPeliculasContext _context;
         private IPeliculasLogica peliculasLogica;
+        private IGeneroLogica _generoLogica;
 
-        public HomeController(IRecomenderLogica peliculaLogica,ITmdbLogica tmdbLogica, IRecomendadorPeliculasContext context, IPeliculasLogica peliculasLogica)
+        public HomeController(IRecomenderLogica peliculaLogica, ITmdbLogica tmdbLogica, IPeliculasLogica peliculasLogica, IGeneroLogica generoLogica)
         {
             _peliculaLogica = peliculaLogica;
             _tmdbLogica = tmdbLogica;
-            _context = context;
             this.peliculasLogica = peliculasLogica;
+            _generoLogica = generoLogica;
         }
 
         public IActionResult Generos()
         {
             int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
-            var generos = _context.GenerosPeliculas.ToList();
+            var generos = _generoLogica.ObtenerTodosLosGeneros();
 
-            var generosPreferidos = _context.UsuarioGeneros
-                .Where(ug => ug.UsuarioId == userId)
-                .Select(ug => ug.GeneroId)
-                .ToList();
+            var generosPreferidos = _generoLogica.ObtenerGenerosFavoritos(userId);
 
             ViewBag.Generos = generos;
             ViewBag.GenerosPreferidos = generosPreferidos;
@@ -40,71 +37,44 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpPost]
         public IActionResult GuardarPreferencias(List<int> generosSeleccionados)
         {
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+
             if (generosSeleccionados.Count < 2 || generosSeleccionados.Count > 3)
             {
                 ModelState.AddModelError("", "Debes seleccionar entre 2 y 3 géneros.");
-                ViewBag.Generos = _context.GenerosPeliculas.ToList();
-                return View("Index");
+                ViewBag.Generos = _generoLogica.ObtenerTodosLosGeneros();
+                return View("Generos");
             }
 
-            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
-
-            var anteriores = _context.UsuarioGeneros.Where(x => x.UsuarioId == userId);
-            _context.UsuarioGeneros.RemoveRange(anteriores);
-
-            foreach (var idGenero in generosSeleccionados)
-            {
-                _context.UsuarioGeneros.Add(new UsuarioGenero
-                {
-                    UsuarioId = userId,
-                    GeneroId = idGenero
-                });
-            }
-
-            _context.SaveChanges();
+            _generoLogica.GuardarPreferencias(userId, generosSeleccionados);
 
             return RedirectToAction("CalificarPeliculas");
         }
 
 
-        //pasarela para puntear 10 pelis
         [HttpGet]
         public IActionResult CalificarPeliculas()
         {
-            //listar generos
             int userId = Int32.Parse(HttpContext.Session.GetString("UserId"));
-            
-            var generosPreferidos = _context.UsuarioGeneros
-                                    .Where(ug => ug.UsuarioId == userId)
-                                    .Select(ug => ug.Genero.Nombre)
-                                    .ToArray();
-            var generosFinales = generosPreferidos;
-            if (generosPreferidos.Length == 0)
+
+            if (_generoLogica.noPoseeGeneros(userId))
             {
-                TempData["Mensaje"] = "Primero seleccioná tus géneros favoritos.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Generos");
             }
 
-            //obtener generos de pelicuas que califico antes, y que tengan mas de 3 en puntuacion peliculas que califico antes
-            var favoritas = _context.Historials
-            .Where(h => h.UsuarioId == userId && h.Calificacion > 3)
-            .Select(h => h.Generos)
-            .ToList();
+            var generosPreferidos = _generoLogica.ObtenerGenerosPreferidos(userId);
+            var generosFinales = generosPreferidos;
+
+            var favoritas = _generoLogica.ObtenerGenerosDePeliculasFavoritas(userId);
 
             if (favoritas.Count > 0)
             {
 
-                // Dividir, limpiar y aplanar los géneros del historial
-                var generosDesdeHistorial = favoritas
-                    .SelectMany(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    .Select(g => g.Trim())
-                    .Distinct()
-                    .ToArray();
+                var generosDesdeHistorial = ParsearPeliculas(favoritas);
 
-                // Unir sin duplicados
-                  generosFinales = generosPreferidos
-                    .Union(generosDesdeHistorial)
-                    .ToArray();
+                generosFinales = generosPreferidos
+                  .Union(generosDesdeHistorial)
+                  .ToArray();
             }
 
             TempData["generos"] = generosFinales;
@@ -114,13 +84,21 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
             if (pelicula.Count == 0)
             {
-                TempData["Mensaje"] = "No hay películas disponibles con los géneros seleccionados.";
-                return RedirectToAction("Index");
+                TempData["Mensaje"] = "No hay películas disponibles con los géneros seleccionados seleccione otro genero.";
+                return RedirectToAction("Generos");
             }
 
             _tmdbLogica.ConseguirPeliculas(pelicula.First().Id);
-            List < PeliculaCalificacionDTO> peliculas = _tmdbLogica.obtenerCaracteristicasDePeliculas(pelicula);
+            List<PeliculaCalificacionDTO> peliculas = _tmdbLogica.obtenerCaracteristicasDePeliculas(pelicula);
             return View(pelicula);
+        }
+
+        private string[] ParsearPeliculas(List<string> favoritas)
+        {
+            return favoritas.SelectMany(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                .Select(g => g.Trim())
+                .Distinct()
+                .ToArray();
         }
 
         [HttpGet]
@@ -132,10 +110,10 @@ namespace RecomendadorDePeliculas.Web.Controllers
         [HttpGet]
         public void HacerPrediccion()
         {
-            _peliculaLogica.RealizarPrediccion(1,25);
+            _peliculaLogica.RealizarPrediccion(1, 25);
 
             Console.WriteLine("la pelicula es recomendada ");
-        }    
+        }
 
         [HttpGet]
         public IActionResult Resenar([FromQuery] int id)
@@ -148,7 +126,7 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
 
         [HttpPost]
-        public IActionResult Resenar(int peliculaId, double calificacion, string comentario,string peliculaGenero)
+        public IActionResult Resenar(int peliculaId, double calificacion, string comentario, string peliculaGenero)
         {
             int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
@@ -184,8 +162,6 @@ namespace RecomendadorDePeliculas.Web.Controllers
             var resultados = peliculasLogica.BuscarPeliculasPorTitulo(titulo);
             return View("CalificarPeliculas", resultados);
         }
-
-
 
     }
 }

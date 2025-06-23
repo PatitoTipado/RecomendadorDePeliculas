@@ -53,13 +53,13 @@ namespace RecomendadorDePeliculas.Web.Controllers
 
                 HttpContext.Session.SetString("UserId", id.ToString());
 
-                return Redirect("/Home/Generos");
+                return Redirect("/Home/CalificarPeliculas");
             }
 
             TempData["Mensaje"] = "Correo o contraseña incorrecta";
             return View("login");
         }
-        //cuando lo envuelva en un boton hacerlo form todo
+
         public async Task <IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -161,12 +161,11 @@ namespace RecomendadorDePeliculas.Web.Controllers
             var usuario = _usuarioLogica.ObtenerPorCorreo(correo);
             if (usuario != null)
             {
-                // Generar token
                 var token = Guid.NewGuid().ToString();
                 usuario.TokenRecuperacion = token;
-                usuario.TokenExpiracion = DateTime.Now.AddHours(1); // válido por 1 hora
+                usuario.TokenExpiracion = DateTime.Now.AddHours(1); 
 
-                _usuarioLogica.Actualizar(usuario); // Guardar en DB
+                _usuarioLogica.Actualizar(usuario); 
 
                 var enlace = Url.Action("ReestablecerContrasenia", "Login", new { token = token }, Request.Scheme);
 
