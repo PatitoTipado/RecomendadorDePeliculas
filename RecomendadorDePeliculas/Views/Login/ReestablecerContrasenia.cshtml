@@ -2,31 +2,48 @@
     ViewData["Title"] = "Restablecer Contraseña";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h4 class="card-title mb-4 text-center">Restablecer contraseña</h4>
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3 mx-auto text-center" role="alert" style="max-width: 500px;">
+        @TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
 
-                @if (TempData["Mensaje"] != null)
-                {
-                    <div class="alert alert-danger">@TempData["Mensaje"]</div>
-                }
+<div class="container mt-5">
+    <div class="mx-auto p-4 bg-white shadow-sm" style="max-width: 480px; border-radius: 16px;">
+        <h2 class="fw-bold mb-4 text-center" style="color: #ff6b00;">
+            <i class="bi bi-key-fill me-1"></i> Restablecer Contraseña
+        </h2>
 
-                <form method="post" asp-action="ReestablecerContrasenia">
-                    <input type="hidden" name="token" value="@ViewBag.Token" />
-                    <div class="mb-3">
-                        <label>Nueva contraseña</label>
-                        <input type="password" name="nuevaContrasenia" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label>Repetir contraseña</label>
-                        <input type="password" name="repetirContrasenia" class="form-control" required />
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Guardar nueva contraseña</button>
-                </form>
+        <form method="post" asp-action="ReestablecerContrasenia">
+            <input type="hidden" name="token" value="@ViewBag.Token" />
+
+            <div class="mb-3">
+                <label for="nuevaContrasenia" class="form-label fw-semibold">Nueva contraseña</label>
+                <input type="password" name="nuevaContrasenia" id="nuevaContrasenia" class="form-control rounded-3" placeholder="Nueva contraseña" required />
             </div>
-        </div>
+
+            <div class="mb-3">
+                <label for="repetirContrasenia" class="form-label fw-semibold">Repetir contraseña</label>
+                <input type="password" name="repetirContrasenia" id="repetirContrasenia" class="form-control rounded-3" placeholder="Repetir contraseña" required />
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit"
+                        class="btn text-white fw-bold"
+                        style="background-color: #ff6b00; border-radius: 8px; transition: background-color 0.3s ease;"
+                        onmouseover="this.style.backgroundColor='#e65c00'"
+                        onmouseout="this.style.backgroundColor='#ff6b00'">
+                    Guardar nueva contraseña
+                </button>
+            </div>
+
+            <div class="mt-3 text-center">
+                <a href="/Login" class="text-decoration-none text-primary">
+                    ← Volver al inicio de sesión
+                </a>
+            </div>
+        </form>
     </div>
 </div>
-
