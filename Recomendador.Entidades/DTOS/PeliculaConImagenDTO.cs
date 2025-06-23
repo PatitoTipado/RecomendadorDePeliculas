@@ -13,7 +13,9 @@ namespace RecomendadorDePeliculas.Entidades.DTOS
         public string? Genres { get; set; }
         public int? TmdbId { get; set; }
 
-        public string? ImagenUrl { get; set; } 
+        public string? ImagenUrl { get; set; }
+
+        public string? Sinopsis { get; set; }
         public bool Adult { get; set; }// Indica si la película es para adultos
     }
 
